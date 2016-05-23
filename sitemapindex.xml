@@ -7,11 +7,11 @@
                         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
  <sitemap>
   <loc>https://andir.github.io/categories/cat_linux.xml</loc>
-  <lastmod>2016-05-23T11:06:00Z</lastmod>
+  <lastmod>2016-05-23T11:08:00Z</lastmod>
  </sitemap>
  <sitemap>
   <loc>https://andir.github.io/categories/dhcpd.xml</loc>
-  <lastmod>2016-05-23T11:06:00Z</lastmod>
+  <lastmod>2016-05-23T11:08:00Z</lastmod>
  </sitemap>
  <sitemap>
   <loc>https://andir.github.io/categories/docker.xml</loc>
@@ -19,7 +19,7 @@
  </sitemap>
  <sitemap>
   <loc>https://andir.github.io/categories/isc.xml</loc>
-  <lastmod>2016-05-23T11:06:00Z</lastmod>
+  <lastmod>2016-05-23T11:08:00Z</lastmod>
  </sitemap>
  <sitemap>
   <loc>https://andir.github.io/categories/postgresql.xml</loc>
@@ -35,18 +35,18 @@
  </sitemap>
  <sitemap>
   <loc>https://andir.github.io/galleries/demo/rss.xml</loc>
-  <lastmod>2016-05-23T10:57:00Z</lastmod>
+  <lastmod>2016-05-23T17:09:00Z</lastmod>
  </sitemap>
  <sitemap>
   <loc>https://andir.github.io/galleries/rss.xml</loc>
-  <lastmod>2016-05-23T10:57:00Z</lastmod>
+  <lastmod>2016-05-23T17:09:00Z</lastmod>
  </sitemap>
  <sitemap>
   <loc>https://andir.github.io/rss.xml</loc>
-  <lastmod>2016-05-23T11:06:00Z</lastmod>
+  <lastmod>2016-05-23T11:08:00Z</lastmod>
  </sitemap>
  <sitemap>
   <loc>https://andir.github.io/sitemap.xml</loc>
-  <lastmod>2016-05-23T11:06:00Z</lastmod>
+  <lastmod>2016-05-23T17:09:00Z</lastmod>
  </sitemap>
 </sitemapindex>
