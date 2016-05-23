@@ -14,6 +14,7 @@
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../../rss.xml">
 <link rel="canonical" href="https://andir.github.io/posts/postgresql-tmpfs-with-sytemdsocket-activation-for-local-ephemeral-data-during-development/">
 <!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="author" content="Andreas Rammhold">
+<link rel="next" href="../isc-dhcpd-multiple-classes/" title="Using multiple client classes with ISC DHCPd" type="text/html">
 <meta property="og:site_name" content="Weird random notes">
 <meta property="og:title" content="Postgresql-tmpfs with sytemd.socket-activation for local (ephemeral) d">
 <meta property="og:url" content="https://andir.github.io/posts/postgresql-tmpfs-with-sytemdsocket-activation-for-local-ephemeral-data-during-development/">
@@ -105,12 +106,16 @@ In my case I have to ru'>
 <p>Now that we are past the introductional blabla here are the systemd unit files I'm using to acheive this:</p>
 <script src="https://gist.github.com/d8307bcead6d83945db462698163ff40.js"></script><noscript>
 <pre class="literal-block">
-Not Found
+[Service]
+ExecStart=/usr/bin/docker run --rm --shm-size=2g -name psql-tmpfs -p 127.0.0.1:5434:5432 -t andir/postgresql-tmpfs
+ExecStartPost=/bin/sleep 15
+ExecStop=/usr/bin/docker stop psql-tmpfs
+
 </pre>
 </noscript>
 <p>You can either put those unit files in <cite>/etc/systemd/system</cite> or install them as systemd-user units in <cite>~/.config/systemd/user</cite>.</p>
-<pre class="code bash"><a name="rest_code_1d96f6c010634049a42a053c45683a8c-1"></a>systemctl daemon-reload
-<a name="rest_code_1d96f6c010634049a42a053c45683a8c-2"></a>systemctl <span class="nb">enable</span> postgresql-docker.socket
+<pre class="code bash"><a name="rest_code_973014a6d7274759875145775ab1d67c-1"></a>systemctl daemon-reload
+<a name="rest_code_973014a6d7274759875145775ab1d67c-2"></a>systemctl <span class="nb">enable</span> postgresql-docker.socket
 </pre>
 <p>If you try to connect to the postgresql server (<code>nc 127.0.0.1 5432</code>) you can observe the container while it is starting (<code>journalctl -f</code>).</p>
 <p>The default username, password and datbase name is <cite>postgres</cite>. You can change that by modifying the startup arguments of the docker container. Those are documented at <a class="reference external" href="https://hub.docker.com/_/postgres/">https://hub.docker.com/_/postgres/</a>.</p>
@@ -123,6 +128,11 @@ Not Found
             <li><a class="tag p-category" href="../../categories/postgresql/" rel="tag">postgresql</a></li>
             <li><a class="tag p-category" href="../../categories/systemd/" rel="tag">systemd</a></li>
             <li><a class="tag p-category" href="../../categories/tmpfs/" rel="tag">tmpfs</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="next">
+                <a href="../isc-dhcpd-multiple-classes/" rel="next" title="Using multiple client classes with ISC DHCPd">Next post</a>
+            </li>
         </ul></nav></aside><section class="comments hidden-print"><h2>Comments</h2>
         
         
