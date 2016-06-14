@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <base href="https://andir.github.io/posts/postgresql-tmpfs-with-sytemdsocket-activation-for-local-ephemeral-data-during-development/">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Postgresql-tmpfs with sytemd.socket-activation for local (ephemeral) data during development | Weird random notes</title>
+<title>Postgresql-tmpfs with systemd.socket-activation for local (ephemeral) data during development | Weird random notes</title>
 <link href="../../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
 <link href="../../assets/css/rst.css" rel="stylesheet" type="text/css">
 <link href="../../assets/css/code.css" rel="stylesheet" type="text/css">
@@ -16,7 +16,7 @@
 <!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="author" content="Andreas Rammhold">
 <link rel="next" href="../isc-dhcpd-multiple-classes/" title="Using multiple client classes with ISC DHCPd" type="text/html">
 <meta property="og:site_name" content="Weird random notes">
-<meta property="og:title" content="Postgresql-tmpfs with sytemd.socket-activation for local (ephemeral) d">
+<meta property="og:title" content="Postgresql-tmpfs with systemd.socket-activation for local (ephemeral) ">
 <meta property="og:url" content="https://andir.github.io/posts/postgresql-tmpfs-with-sytemdsocket-activation-for-local-ephemeral-data-during-development/">
 <meta property="og:description" content='During development of database related stuff you commonly run into the "issue" (or non-issue depending on your taste) of running a local database server - or multiple of those.
 In my case I have to ru'>
@@ -78,7 +78,7 @@ In my case I have to ru'>
         <div class="row">
             
             
-<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">Postgresql-tmpfs with sytemd.socket-activation for local (ephemeral) data during development</a></h1>
+<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">Postgresql-tmpfs with systemd.socket-activation for local (ephemeral) data during development</a></h1>
 
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn">
@@ -114,8 +114,8 @@ ExecStop=/usr/bin/docker stop psql-tmpfs
 </pre>
 </noscript>
 <p>You can either put those unit files in <cite>/etc/systemd/system</cite> or install them as systemd-user units in <cite>~/.config/systemd/user</cite>.</p>
-<pre class="code bash"><a name="rest_code_4f51ea26d22f46e2b22002d06672b2da-1"></a>systemctl daemon-reload
-<a name="rest_code_4f51ea26d22f46e2b22002d06672b2da-2"></a>systemctl <span class="nb">enable</span> postgresql-docker.socket
+<pre class="code bash"><a name="rest_code_6c1b09d7a5cd4ea38a1b41248f644177-1"></a>systemctl daemon-reload
+<a name="rest_code_6c1b09d7a5cd4ea38a1b41248f644177-2"></a>systemctl <span class="nb">enable</span> postgresql-docker.socket
 </pre>
 <p>If you try to connect to the postgresql server (<code>nc 127.0.0.1 5432</code>) you can observe the container while it is starting (<code>journalctl -f</code>).</p>
 <p>The default username, password and datbase name is <cite>postgres</cite>. You can change that by modifying the startup arguments of the docker container. Those are documented at <a class="reference external" href="https://hub.docker.com/_/postgres/">https://hub.docker.com/_/postgres/</a>.</p>
@@ -140,7 +140,7 @@ ExecStop=/usr/bin/docker stop psql-tmpfs
         <script>
         var disqus_shortname ="andir",
             disqus_url="https://andir.github.io/posts/postgresql-tmpfs-with-sytemdsocket-activation-for-local-ephemeral-data-during-development/",
-        disqus_title="Postgresql-tmpfs with sytemd.socket-activation for local (ephemeral) data during development",
+        disqus_title="Postgresql-tmpfs with systemd.socket-activation for local (ephemeral) data during development",
         disqus_identifier="cache/posts/postgresql-tmpfs-with-sytemdsocket-activation-for-local-ephemeral-data-during-development.html",
         disqus_config = function () {
             this.language = "en";

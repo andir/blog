@@ -15,11 +15,11 @@
  </url>
  <url>
   <loc>https://andir.github.io/archive.html</loc>
-  <lastmod>2016-06-14T16:50:00Z</lastmod>
+  <lastmod>2016-06-14T17:22:00Z</lastmod>
  </url>
  <url>
   <loc>https://andir.github.io/categories/</loc>
-  <lastmod>2016-06-14T16:50:00Z</lastmod>
+  <lastmod>2016-06-14T17:22:00Z</lastmod>
  </url>
  <url>
   <loc>https://andir.github.io/categories/cat_linux/</loc>
@@ -34,12 +34,24 @@
   <lastmod>2016-06-14T16:50:00Z</lastmod>
  </url>
  <url>
+  <loc>https://andir.github.io/categories/iproute2/</loc>
+  <lastmod>2016-06-14T17:22:00Z</lastmod>
+ </url>
+ <url>
   <loc>https://andir.github.io/categories/isc/</loc>
   <lastmod>2016-06-14T16:50:00Z</lastmod>
  </url>
  <url>
+  <loc>https://andir.github.io/categories/linux/</loc>
+  <lastmod>2016-06-14T17:22:00Z</lastmod>
+ </url>
+ <url>
   <loc>https://andir.github.io/categories/postgresql/</loc>
   <lastmod>2016-06-14T16:50:00Z</lastmod>
+ </url>
+ <url>
+  <loc>https://andir.github.io/categories/routing/</loc>
+  <lastmod>2016-06-14T17:22:00Z</lastmod>
  </url>
  <url>
   <loc>https://andir.github.io/categories/systemd/</loc>
@@ -48,6 +60,10 @@
  <url>
   <loc>https://andir.github.io/categories/tmpfs/</loc>
   <lastmod>2016-06-14T16:50:00Z</lastmod>
+ </url>
+ <url>
+  <loc>https://andir.github.io/categories/vrf/</loc>
+  <lastmod>2016-06-14T17:22:00Z</lastmod>
  </url>
  <url>
   <loc>https://andir.github.io/galleries/</loc>
@@ -68,6 +84,10 @@
  <url>
   <loc>https://andir.github.io/posts/isc-dhcpd-multiple-classes/</loc>
   <lastmod>2016-06-14T16:50:00Z</lastmod>
+ </url>
+ <url>
+  <loc>https://andir.github.io/posts/linux-ip-vrf/</loc>
+  <lastmod>2016-06-14T17:22:00Z</lastmod>
  </url>
  <url>
   <loc>https://andir.github.io/posts/postgresql-tmpfs-with-sytemdsocket-activation-for-local-ephemeral-data-during-development/</loc>

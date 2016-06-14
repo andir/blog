@@ -1,11 +1,11 @@
-.. title: Postgresql-tmpfs with sytemd.socket-activation for local (ephemeral) data during development
+.. title: Postgresql-tmpfs with systemd.socket-activation for local (ephemeral) data during development
 .. slug: postgresql-tmpfs-with-sytemdsocket-activation-for-local-ephemeral-data-during-development
 .. date: 2016-04-22 09:50:09 UTC
 .. tags: systemd, postgresql, docker, tmpfs
 .. category: linux
 .. link: 
-.. description: 
-.. type: text 
+.. description:
+.. type: text
 
 During development of database related stuff you commonly run into the "issue" (or non-issue depending on your taste) of running a local database server - or multiple of those.
 
@@ -33,4 +33,3 @@ The default username, password and datbase name is `postgres`. You can change th
 Happy data trashing \\o/
 
 P.S.: If you've an idea on how to stop the service after x minutes of inactivity please let me know. Stopping the service manually isn't really what I'm after.
-

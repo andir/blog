@@ -1,5 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Weird random notes</title><link>https://andir.github.io/</link><description>Some notes I like to keep around</description><atom:link rel="self" href="https://andir.github.io/rss.xml" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Tue, 14 Jun 2016 16:50:38 GMT</lastBuildDate><generator>https://getnikola.com/</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Using multiple client classes with ISC DHCPd</title><link>https://andir.github.io/posts/isc-dhcpd-multiple-classes/</link><dc:creator>Andreas Rammhold</dc:creator><description>&lt;div&gt;&lt;p&gt;Since the internet is lacking examples of how to use multiple classes with a single pool here is one:&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Weird random notes</title><link>https://andir.github.io/</link><description>Some notes I like to keep around</description><atom:link type="application/rss+xml" href="https://andir.github.io/rss.xml" rel="self"></atom:link><language>en</language><lastBuildDate>Tue, 14 Jun 2016 17:43:57 GMT</lastBuildDate><generator>https://getnikola.com/</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Using VRFs with linux</title><link>https://andir.github.io/posts/linux-ip-vrf/</link><dc:creator>Andreas Rammhold</dc:creator><description>&lt;div&gt;&lt;p&gt;Ever since I've heard about VRF support (or VRF-lite like it is called in Documentation/network/vrf.txt) I wanted to start tinkering with it.
+Since the topic is currently only covered in the previously mentioned linux kernel documentation I thought it would be a good idea to post some notes.&lt;/p&gt;
+&lt;p&gt;It basically boils down to adding an VRF interface and creating two &lt;cite&gt;ip rule&lt;/cite&gt;-entries.&lt;/p&gt;
+&lt;p&gt;I'm using a local VM with ArchLinux since the VRF feature seems to require a rather recent kernel. My experience with kernels below version 4.6 weren't that great.&lt;/p&gt;
+&lt;pre class="code shell"&gt;&lt;a name="rest_code_72ef79faf795451c866c70b0a43f7578-1"&gt;&lt;/a&gt;$ ip -br link &lt;span class="c1"&gt;# this is where we are start off&lt;/span&gt;
+&lt;a name="rest_code_72ef79faf795451c866c70b0a43f7578-2"&gt;&lt;/a&gt;lo               UNKNOWN        00:00:00:00:00:00 &amp;lt;LOOPBACK,UP,LOWER_UP&amp;gt;
+&lt;a name="rest_code_72ef79faf795451c866c70b0a43f7578-3"&gt;&lt;/a&gt;ens3             DOWN           52:54:00:12:34:56 &amp;lt;BROADCAST,MULTICAST&amp;gt;
+&lt;/pre&gt;&lt;p&gt;Now are adding a new interface named &lt;cite&gt;vrf-customer1&lt;/cite&gt; with the table &lt;cite&gt;customer1&lt;/cite&gt; assigned to it.
+The table parameter is used to place routes from your devices within the VRF into the right routing table&lt;/p&gt;
+&lt;pre class="code shell"&gt;&lt;a name="rest_code_e23557a6a2634526ba06307d87d1c41b-1"&gt;&lt;/a&gt;$ ip link add vrf-customer1 &lt;span class="nb"&gt;type&lt;/span&gt; vrf table customer1
+&lt;a name="rest_code_e23557a6a2634526ba06307d87d1c41b-2"&gt;&lt;/a&gt;
+&lt;a name="rest_code_e23557a6a2634526ba06307d87d1c41b-3"&gt;&lt;/a&gt;$ ip -d link show vrf-customer1 &lt;span class="c1"&gt;# verify that the interface indeed exists and has the correct table assigned to it&lt;/span&gt;
+&lt;a name="rest_code_e23557a6a2634526ba06307d87d1c41b-4"&gt;&lt;/a&gt;4: vrf-customer1: &amp;lt;NOARP,MASTER&amp;gt; mtu &lt;span class="m"&gt;1500&lt;/span&gt; qdisc noop state DOWN mode DEFAULT group default qlen 1000
+&lt;a name="rest_code_e23557a6a2634526ba06307d87d1c41b-5"&gt;&lt;/a&gt;    link/ether ca:22:59:ba:05:da brd ff:ff:ff:ff:ff:ff promiscuity 0
+&lt;a name="rest_code_e23557a6a2634526ba06307d87d1c41b-6"&gt;&lt;/a&gt;    vrf table &lt;span class="m"&gt;100&lt;/span&gt; addrgenmode eui64
+&lt;/pre&gt;&lt;p&gt;Next: redirect the traffic from and to the vrf to the customer1 table and verify the rules are indeed as expected:&lt;/p&gt;
+&lt;pre class="code shell"&gt;&lt;a name="rest_code_c734518ae29b45f78f9926ca726d29a7-1"&gt;&lt;/a&gt;$ ip -4 rule add oif vrf-customer1 lookup customer1
+&lt;a name="rest_code_c734518ae29b45f78f9926ca726d29a7-2"&gt;&lt;/a&gt;$ ip -4 rule add iif vrf-customer1 lookup customer1
+&lt;a name="rest_code_c734518ae29b45f78f9926ca726d29a7-3"&gt;&lt;/a&gt;$ ip -6 rule add oif vrf-customer1 lookup customer1
+&lt;a name="rest_code_c734518ae29b45f78f9926ca726d29a7-4"&gt;&lt;/a&gt;$ ip -6 rule add iif vrf-customer1 lookup customer1
+&lt;a name="rest_code_c734518ae29b45f78f9926ca726d29a7-5"&gt;&lt;/a&gt;
+&lt;a name="rest_code_c734518ae29b45f78f9926ca726d29a7-6"&gt;&lt;/a&gt;$ ip -4 rule
+&lt;a name="rest_code_c734518ae29b45f78f9926ca726d29a7-7"&gt;&lt;/a&gt;0:  from all lookup &lt;span class="nb"&gt;local&lt;/span&gt;
+&lt;a name="rest_code_c734518ae29b45f78f9926ca726d29a7-8"&gt;&lt;/a&gt;32764:      from all iif vrf-customer1 lookup customer1
+&lt;a name="rest_code_c734518ae29b45f78f9926ca726d29a7-9"&gt;&lt;/a&gt;32765:      from all oif vrf-customer1 lookup customer1
+&lt;a name="rest_code_c734518ae29b45f78f9926ca726d29a7-10"&gt;&lt;/a&gt;32766:      from all lookup main
+&lt;a name="rest_code_c734518ae29b45f78f9926ca726d29a7-11"&gt;&lt;/a&gt;32767:      from all lookup default
+&lt;a name="rest_code_c734518ae29b45f78f9926ca726d29a7-12"&gt;&lt;/a&gt;
+&lt;a name="rest_code_c734518ae29b45f78f9926ca726d29a7-13"&gt;&lt;/a&gt;$ ip -6 rule
+&lt;a name="rest_code_c734518ae29b45f78f9926ca726d29a7-14"&gt;&lt;/a&gt;0:  from all lookup &lt;span class="nb"&gt;local&lt;/span&gt;
+&lt;a name="rest_code_c734518ae29b45f78f9926ca726d29a7-15"&gt;&lt;/a&gt;32764:      from all oif vrf-customer1 lookup customer1
+&lt;a name="rest_code_c734518ae29b45f78f9926ca726d29a7-16"&gt;&lt;/a&gt;32765:      from all iif vrf-customer1 lookup customer1
+&lt;a name="rest_code_c734518ae29b45f78f9926ca726d29a7-17"&gt;&lt;/a&gt;32766:      from all lookup main
+&lt;/pre&gt;&lt;p&gt;To make any use of our VRF we will have to add an device to it. In my case I'll add the only available "physical" device &lt;cite&gt;ens3&lt;/cite&gt;.&lt;/p&gt;
+&lt;pre class="code shell"&gt;&lt;a name="rest_code_a6149ca2a8bb46219ecdcdcfad5f7df6-1"&gt;&lt;/a&gt;$ ip link &lt;span class="nb"&gt;set&lt;/span&gt; ens3 master vrf-customer1
+&lt;a name="rest_code_a6149ca2a8bb46219ecdcdcfad5f7df6-2"&gt;&lt;/a&gt;$ &lt;span class="c1"&gt;# verify the interface is indeed a member of the VRF&lt;/span&gt;
+&lt;a name="rest_code_a6149ca2a8bb46219ecdcdcfad5f7df6-3"&gt;&lt;/a&gt;$ ip -br link show master vrf-customer1
+&lt;a name="rest_code_a6149ca2a8bb46219ecdcdcfad5f7df6-4"&gt;&lt;/a&gt;ens3             DOWN           52:54:00:12:34:56 &amp;lt;BROADCAST,MULTICAST&amp;gt;
+&lt;/pre&gt;&lt;p&gt;Now that we've an interface to receive send send packets with it we should consider adding an IP-Address to it. Since IPv6 is enabled per default we don't need to configure a LL-Address for that protocol.&lt;/p&gt;
+&lt;pre class="code shell"&gt;&lt;a name="rest_code_c38ebdd07661452f9afef4e3221d2133-1"&gt;&lt;/a&gt;$ &lt;span class="c1"&gt;# add an IP to the interface&lt;/span&gt;
+&lt;a name="rest_code_c38ebdd07661452f9afef4e3221d2133-2"&gt;&lt;/a&gt;$ ip addr add 10.0.0.1/24 dev ens3
+&lt;a name="rest_code_c38ebdd07661452f9afef4e3221d2133-3"&gt;&lt;/a&gt;$ ip route show table customer1
+&lt;a name="rest_code_c38ebdd07661452f9afef4e3221d2133-4"&gt;&lt;/a&gt;&lt;span class="nb"&gt;local&lt;/span&gt; 10.0.0.1 dev ens3  proto kernel  scope host  src 10.0.0.1
+&lt;/pre&gt;&lt;p&gt;Seeing a route like that might confuse the average linux user. Those routes usually exist within the local table which you can check via &lt;cite&gt;ip route show table local&lt;/cite&gt;&lt;/p&gt;
+&lt;p&gt;The route to the /24 we've added is still missing from the interface. Why is that?
+You'll have to change the state of the interface to "UP":&lt;/p&gt;
+&lt;pre class="code shell"&gt;&lt;a name="rest_code_30d79ad1fdbb4b4fad0855ca7caff2c8-1"&gt;&lt;/a&gt;$ ip link &lt;span class="nb"&gt;set&lt;/span&gt; ens3 up
+&lt;a name="rest_code_30d79ad1fdbb4b4fad0855ca7caff2c8-2"&gt;&lt;/a&gt;$ ip route show table customer1
+&lt;a name="rest_code_30d79ad1fdbb4b4fad0855ca7caff2c8-3"&gt;&lt;/a&gt;broadcast 10.0.0.0 dev ens3  proto kernel  scope link  src 10.0.0.1
+&lt;a name="rest_code_30d79ad1fdbb4b4fad0855ca7caff2c8-4"&gt;&lt;/a&gt;10.0.0.0/24 dev ens3  proto kernel  scope link  src 10.0.0.1
+&lt;a name="rest_code_30d79ad1fdbb4b4fad0855ca7caff2c8-5"&gt;&lt;/a&gt;&lt;span class="nb"&gt;local&lt;/span&gt; 10.0.0.1 dev ens3  proto kernel  scope host  src 10.0.0.1
+&lt;a name="rest_code_30d79ad1fdbb4b4fad0855ca7caff2c8-6"&gt;&lt;/a&gt;broadcast 10.0.0.255 dev ens3  proto kernel  scope link  src 10.0.0.1
+&lt;a name="rest_code_30d79ad1fdbb4b4fad0855ca7caff2c8-7"&gt;&lt;/a&gt;
+&lt;a name="rest_code_30d79ad1fdbb4b4fad0855ca7caff2c8-8"&gt;&lt;/a&gt;
+&lt;a name="rest_code_30d79ad1fdbb4b4fad0855ca7caff2c8-9"&gt;&lt;/a&gt;$ ip -6 route show table customer1
+&lt;a name="rest_code_30d79ad1fdbb4b4fad0855ca7caff2c8-10"&gt;&lt;/a&gt;&lt;span class="nb"&gt;local&lt;/span&gt; fe80::5054:ff:fe12:3456 dev lo  proto none  metric &lt;span class="m"&gt;0&lt;/span&gt;  pref medium
+&lt;a name="rest_code_30d79ad1fdbb4b4fad0855ca7caff2c8-11"&gt;&lt;/a&gt;fe80::/64 dev ens3  proto kernel  metric &lt;span class="m"&gt;256&lt;/span&gt;  pref medium
+&lt;a name="rest_code_30d79ad1fdbb4b4fad0855ca7caff2c8-12"&gt;&lt;/a&gt;ff00::/8 dev vrf-customer1  metric &lt;span class="m"&gt;256&lt;/span&gt;  pref medium
+&lt;a name="rest_code_30d79ad1fdbb4b4fad0855ca7caff2c8-13"&gt;&lt;/a&gt;ff00::/8 dev ens3  metric &lt;span class="m"&gt;256&lt;/span&gt;  pref medium
+&lt;/pre&gt;&lt;p&gt;suddenly routes \o/&lt;/p&gt;&lt;/div&gt;</description><category>iproute2</category><category>linux</category><category>routing</category><category>vrf</category><guid>https://andir.github.io/posts/linux-ip-vrf/</guid><pubDate>Tue, 14 Jun 2016 17:00:00 GMT</pubDate></item><item><title>Using multiple client classes with ISC DHCPd</title><link>https://andir.github.io/posts/isc-dhcpd-multiple-classes/</link><dc:creator>Andreas Rammhold</dc:creator><description>&lt;div&gt;&lt;p&gt;Since the internet is lacking examples of how to use multiple classes with a single pool here is one:&lt;/p&gt;
 &lt;pre class="code nginx"&gt;&lt;a name="rest_code_df91df1c98284d36b43d09807e902fff-1"&gt;&lt;/a&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="s"&gt;"mac-filtered-clients"&lt;/span&gt;
 &lt;a name="rest_code_df91df1c98284d36b43d09807e902fff-2"&gt;&lt;/a&gt;&lt;span class="p"&gt;{&lt;/span&gt;
 &lt;a name="rest_code_df91df1c98284d36b43d09807e902fff-3"&gt;&lt;/a&gt;    &lt;span class="kn"&gt;match&lt;/span&gt; &lt;span class="s"&gt;binary-to-ascii&lt;/span&gt; &lt;span class="s"&gt;(16,&lt;/span&gt; &lt;span class="mi"&gt;8&lt;/span&gt;&lt;span class="s"&gt;,&lt;/span&gt; &lt;span class="s"&gt;":",&lt;/span&gt; &lt;span class="s"&gt;substring(hardware,&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="s"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;6&lt;/span&gt;&lt;span class="s"&gt;))&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
@@ -20,7 +79,7 @@
 &lt;a name="rest_code_df91df1c98284d36b43d09807e902fff-18"&gt;&lt;/a&gt;          &lt;span class="kn"&gt;allow&lt;/span&gt; &lt;span class="s"&gt;members&lt;/span&gt; &lt;span class="s"&gt;of&lt;/span&gt; &lt;span class="s"&gt;"mac-filtered-clients"&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
 &lt;a name="rest_code_df91df1c98284d36b43d09807e902fff-19"&gt;&lt;/a&gt;     &lt;span class="p"&gt;}&lt;/span&gt;
 &lt;a name="rest_code_df91df1c98284d36b43d09807e902fff-20"&gt;&lt;/a&gt;&lt;span class="p"&gt;}&lt;/span&gt;
-&lt;/pre&gt;&lt;p&gt;This isn't very special compared to a setup with just a single class but it can be confusing since debugging classes is a pita.. One pitfall I did run into was using the byte representation of the mac-addresses (without the quotes) and using &lt;code&gt;match hardware;&lt;/code&gt;. The example above works for me (tm).&lt;/p&gt;&lt;/div&gt;</description><category>dhcpd</category><category>isc</category><guid>https://andir.github.io/posts/isc-dhcpd-multiple-classes/</guid><pubDate>Mon, 23 May 2016 11:00:00 GMT</pubDate></item><item><title>Postgresql-tmpfs with sytemd.socket-activation for local (ephemeral) data during development</title><link>https://andir.github.io/posts/postgresql-tmpfs-with-sytemdsocket-activation-for-local-ephemeral-data-during-development/</link><dc:creator>Andreas Rammhold</dc:creator><description>&lt;div&gt;&lt;p&gt;During development of database related stuff you commonly run into the "issue" (or non-issue depending on your taste) of running a local database server - or multiple of those.&lt;/p&gt;
+&lt;/pre&gt;&lt;p&gt;This isn't very special compared to a setup with just a single class but it can be confusing since debugging classes is a pita.. One pitfall I did run into was using the byte representation of the mac-addresses (without the quotes) and using &lt;code&gt;match hardware;&lt;/code&gt;. The example above works for me (tm).&lt;/p&gt;&lt;/div&gt;</description><category>dhcpd</category><category>isc</category><guid>https://andir.github.io/posts/isc-dhcpd-multiple-classes/</guid><pubDate>Mon, 23 May 2016 11:00:00 GMT</pubDate></item><item><title>Postgresql-tmpfs with systemd.socket-activation for local (ephemeral) data during development</title><link>https://andir.github.io/posts/postgresql-tmpfs-with-sytemdsocket-activation-for-local-ephemeral-data-during-development/</link><dc:creator>Andreas Rammhold</dc:creator><description>&lt;div&gt;&lt;p&gt;During development of database related stuff you commonly run into the "issue" (or non-issue depending on your taste) of running a local database server - or multiple of those.&lt;/p&gt;
 &lt;p&gt;In my case I have to run a local postgresql server on my notebook. I asked myself: I'm not always developing on that piece of software, and I do not always require or want a local postgresql server. What can I do about that?!?&lt;/p&gt;
 &lt;p&gt;On top of that using my precious SSD to store data I am going to delete anyway souds like a waste (or money). In my development environment I can and want to safely wipe the data often. Also most of the database load comes from running test cases anyway. That stuff doesn't need to end up on my (slow, compared to RAM) disk. Using a tmpfs for that kind of stuff sounds much saner to me.&lt;/p&gt;
 &lt;p&gt;The part of running a repetitive clean database setup sounded like the use case for a container based thing. These days docker is pretty "hot" and it solves the issue of distributing re-useable images. There is an official postgresql image on docker hub for various versions of postgresql. I've simply build a new image based on that. It is available on docker hub (&lt;a class="reference external" href="https://hub.docker.com/r/andir/postgresql-tmpfs/"&gt;https://hub.docker.com/r/andir/postgresql-tmpfs/&lt;/a&gt;) or if you prefer to build it on your own you can download the Dockerfile on GitHub (&lt;a class="reference external" href="https://github.com/andir/postgresql-tmpfs"&gt;https://github.com/andir/postgresql-tmpfs&lt;/a&gt;).&lt;/p&gt;
@@ -33,8 +92,8 @@ ExecStop=/usr/bin/docker stop psql-tmpfs
 
 &lt;/pre&gt;
 &lt;/noscript&gt;&lt;p&gt;You can either put those unit files in &lt;cite&gt;/etc/systemd/system&lt;/cite&gt; or install them as systemd-user units in &lt;cite&gt;~/.config/systemd/user&lt;/cite&gt;.&lt;/p&gt;
-&lt;pre class="code bash"&gt;&lt;a name="rest_code_4f51ea26d22f46e2b22002d06672b2da-1"&gt;&lt;/a&gt;systemctl daemon-reload
-&lt;a name="rest_code_4f51ea26d22f46e2b22002d06672b2da-2"&gt;&lt;/a&gt;systemctl &lt;span class="nb"&gt;enable&lt;/span&gt; postgresql-docker.socket
+&lt;pre class="code bash"&gt;&lt;a name="rest_code_6c1b09d7a5cd4ea38a1b41248f644177-1"&gt;&lt;/a&gt;systemctl daemon-reload
+&lt;a name="rest_code_6c1b09d7a5cd4ea38a1b41248f644177-2"&gt;&lt;/a&gt;systemctl &lt;span class="nb"&gt;enable&lt;/span&gt; postgresql-docker.socket
 &lt;/pre&gt;&lt;p&gt;If you try to connect to the postgresql server (&lt;code&gt;nc 127.0.0.1 5432&lt;/code&gt;) you can observe the container while it is starting (&lt;code&gt;journalctl -f&lt;/code&gt;).&lt;/p&gt;
 &lt;p&gt;The default username, password and datbase name is &lt;cite&gt;postgres&lt;/cite&gt;. You can change that by modifying the startup arguments of the docker container. Those are documented at &lt;a class="reference external" href="https://hub.docker.com/_/postgres/"&gt;https://hub.docker.com/_/postgres/&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;Happy data trashing \o/&lt;/p&gt;
