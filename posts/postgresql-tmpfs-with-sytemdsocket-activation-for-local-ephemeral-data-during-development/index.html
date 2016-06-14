@@ -114,8 +114,8 @@ ExecStop=/usr/bin/docker stop psql-tmpfs
 </pre>
 </noscript>
 <p>You can either put those unit files in <cite>/etc/systemd/system</cite> or install them as systemd-user units in <cite>~/.config/systemd/user</cite>.</p>
-<pre class="code bash"><a name="rest_code_973014a6d7274759875145775ab1d67c-1"></a>systemctl daemon-reload
-<a name="rest_code_973014a6d7274759875145775ab1d67c-2"></a>systemctl <span class="nb">enable</span> postgresql-docker.socket
+<pre class="code bash"><a name="rest_code_4f51ea26d22f46e2b22002d06672b2da-1"></a>systemctl daemon-reload
+<a name="rest_code_4f51ea26d22f46e2b22002d06672b2da-2"></a>systemctl <span class="nb">enable</span> postgresql-docker.socket
 </pre>
 <p>If you try to connect to the postgresql server (<code>nc 127.0.0.1 5432</code>) you can observe the container while it is starting (<code>journalctl -f</code>).</p>
 <p>The default username, password and datbase name is <cite>postgres</cite>. You can change that by modifying the startup arguments of the docker container. Those are documented at <a class="reference external" href="https://hub.docker.com/_/postgres/">https://hub.docker.com/_/postgres/</a>.</p>
