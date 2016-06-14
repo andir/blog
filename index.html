@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="en">
+<head>
+<meta charset="utf-8">
+<base href="https://andir.github.io/">
+<meta name="description" content="Some notes I like to keep around">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weird random notes</title>
+<link href="assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="assets/css/colorbox.css" rel="stylesheet" type="text/css">
+<link href="assets/css/theme.css" rel="stylesheet" type="text/css">
+<meta content="#5670d4" name="theme-color">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="rss.xml">
+<link rel="canonical" href="https://andir.github.io/">
+<!--[if lt IE 9]><script src="assets/js/html5.js"></script><![endif]--><link rel="prefetch" href="posts/isc-dhcpd-multiple-classes/" type="text/html">
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
+<!-- Menubar -->
+
+<nav class="navbar navbar-inverse navbar-static-top"><div class="container">
+<!-- This keeps the margins nice -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://andir.github.io/">
+
+                <span id="blog-title">Weird random notes</span>
+            </a>
+        </div>
+<!-- /.navbar-header -->
+        <div class="collapse navbar-collapse" id="bs-navbar" aria-expanded="false">
+            <ul class="nav navbar-nav">
+<li>
+<a href="archive.html">Archive</a>
+                </li>
+<li>
+<a href="categories/">Tags</a>
+                </li>
+<li>
+<a href="rss.xml">RSS feed</a>
+
+                
+            </li>
+</ul>
+<ul class="nav navbar-nav navbar-right"></ul>
+</div>
+<!-- /.navbar-collapse -->
+    </div>
+<!-- /.container -->
+</nav><!-- End of Menubar --><div class="container" id="content" role="main">
+    <div class="body-content">
+        <!--Body content-->
+        <div class="row">
+            
+            
+
+    
+<div class="postindex">
+    <article class="h-entry post-text"><header><h1 class="p-name entry-title"><a href="posts/isc-dhcpd-multiple-classes/" class="u-url">Using multiple client classes with ISC DHCPd</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn">
+                Andreas Rammhold
+            </span></p>
+            <p class="dateline"><a href="posts/isc-dhcpd-multiple-classes/" rel="bookmark"><time class="published dt-published" datetime="2016-05-23T11:00:00Z" title="2016-05-23 11:00">2016-05-23 11:00</time></a></p>
+                <p class="commentline">
+        
+    <a href="posts/isc-dhcpd-multiple-classes/#disqus_thread" data-disqus-identifier="cache/posts/isc-dhcpd-multiple-classes.html">Comments</a>
+
+
+        </p>
+</div>
+    </header><div class="e-content entry-content">
+    <div>
+<p>Since the internet is lacking examples of how to use multiple classes with a single pool here is one:</p>
+<pre class="code nginx"><a name="rest_code_df91df1c98284d36b43d09807e902fff-1"></a><span class="k">class</span> <span class="s">"mac-filtered-clients"</span>
+<a name="rest_code_df91df1c98284d36b43d09807e902fff-2"></a><span class="p">{</span>
+<a name="rest_code_df91df1c98284d36b43d09807e902fff-3"></a>    <span class="kn">match</span> <span class="s">binary-to-ascii</span> <span class="s">(16,</span> <span class="mi">8</span><span class="s">,</span> <span class="s">":",</span> <span class="s">substring(hardware,</span> <span class="mi">1</span><span class="s">,</span> <span class="mi">6</span><span class="s">))</span><span class="p">;</span>
+<a name="rest_code_df91df1c98284d36b43d09807e902fff-4"></a><span class="p">}</span>
+<a name="rest_code_df91df1c98284d36b43d09807e902fff-5"></a>
+<a name="rest_code_df91df1c98284d36b43d09807e902fff-6"></a><span class="k">subclass</span> <span class="s">"mac-filtered-clients"</span> <span class="s">"50:7b:00:00:00:00"</span><span class="p">;</span> <span class="c1"># some cool host!</span>
+<a name="rest_code_df91df1c98284d36b43d09807e902fff-7"></a>
+<a name="rest_code_df91df1c98284d36b43d09807e902fff-8"></a><span class="k">class</span> <span class="s">"J-client"</span> <span class="p">{</span>
+<a name="rest_code_df91df1c98284d36b43d09807e902fff-9"></a>    <span class="kn">spawn</span> <span class="s">with</span> <span class="s">option</span> <span class="s">agent.circuit-id</span><span class="p">;</span>
+<a name="rest_code_df91df1c98284d36b43d09807e902fff-10"></a>    <span class="kn">match</span> <span class="s">if</span> <span class="s">(substring(option</span> <span class="s">agent.circuit-id,</span> <span class="mi">30</span><span class="s">,</span> <span class="mi">9</span><span class="s">)</span> <span class="p">=</span> <span class="s">"foo-bar")</span><span class="p">;</span>
+<a name="rest_code_df91df1c98284d36b43d09807e902fff-11"></a>    <span class="kn">lease</span> <span class="s">limit</span> <span class="mi">1</span><span class="p">;</span>
+<a name="rest_code_df91df1c98284d36b43d09807e902fff-12"></a><span class="p">}</span>
+<a name="rest_code_df91df1c98284d36b43d09807e902fff-13"></a>
+<a name="rest_code_df91df1c98284d36b43d09807e902fff-14"></a><span class="k">subnet</span> <span class="mi">192</span><span class="s">.168.0.0</span> <span class="mi">255</span><span class="s">.255.0.0</span> <span class="p">{</span>
+<a name="rest_code_df91df1c98284d36b43d09807e902fff-15"></a>     <span class="kn">pool</span> <span class="p">{</span>
+<a name="rest_code_df91df1c98284d36b43d09807e902fff-16"></a>          <span class="kn">range</span> <span class="mi">192</span><span class="s">.168.0.10</span> <span class="mi">192</span><span class="s">.168.0.150</span><span class="p">;</span>
+<a name="rest_code_df91df1c98284d36b43d09807e902fff-17"></a>          <span class="kn">allow</span> <span class="s">members</span> <span class="s">of</span> <span class="s">"J-client"</span><span class="p">;</span>
+<a name="rest_code_df91df1c98284d36b43d09807e902fff-18"></a>          <span class="kn">allow</span> <span class="s">members</span> <span class="s">of</span> <span class="s">"mac-filtered-clients"</span><span class="p">;</span>
+<a name="rest_code_df91df1c98284d36b43d09807e902fff-19"></a>     <span class="p">}</span>
+<a name="rest_code_df91df1c98284d36b43d09807e902fff-20"></a><span class="p">}</span>
+</pre>
+<p>This isn't very special compared to a setup with just a single class but it can be confusing since debugging classes is a pita.. One pitfall I did run into was using the byte representation of the mac-addresses (without the quotes) and using <code>match hardware;</code>. The example above works for me (tm).</p>
+</div>
+    </div>
+    </article><article class="h-entry post-text"><header><h1 class="p-name entry-title"><a href="posts/postgresql-tmpfs-with-sytemdsocket-activation-for-local-ephemeral-data-during-development/" class="u-url">Postgresql-tmpfs with sytemd.socket-activation for local (ephemeral) data during development</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn">
+                Andreas Rammhold
+            </span></p>
+            <p class="dateline"><a href="posts/postgresql-tmpfs-with-sytemdsocket-activation-for-local-ephemeral-data-during-development/" rel="bookmark"><time class="published dt-published" datetime="2016-04-22T09:50:09Z" title="2016-04-22 09:50">2016-04-22 09:50</time></a></p>
+                <p class="commentline">
+        
+    <a href="posts/postgresql-tmpfs-with-sytemdsocket-activation-for-local-ephemeral-data-during-development/#disqus_thread" data-disqus-identifier="cache/posts/postgresql-tmpfs-with-sytemdsocket-activation-for-local-ephemeral-data-during-development.html">Comments</a>
+
+
+        </p>
+</div>
+    </header><div class="e-content entry-content">
+    <div>
+<p>During development of database related stuff you commonly run into the "issue" (or non-issue depending on your taste) of running a local database server - or multiple of those.</p>
+<p>In my case I have to run a local postgresql server on my notebook. I asked myself: I'm not always developing on that piece of software, and I do not always require or want a local postgresql server. What can I do about that?!?</p>
+<p>On top of that using my precious SSD to store data I am going to delete anyway souds like a waste (or money). In my development environment I can and want to safely wipe the data often. Also most of the database load comes from running test cases anyway. That stuff doesn't need to end up on my (slow, compared to RAM) disk. Using a tmpfs for that kind of stuff sounds much saner to me.</p>
+<p>The part of running a repetitive clean database setup sounded like the use case for a container based thing. These days docker is pretty "hot" and it solves the issue of distributing re-useable images. There is an official postgresql image on docker hub for various versions of postgresql. I've simply build a new image based on that. It is available on docker hub (<a class="reference external" href="https://hub.docker.com/r/andir/postgresql-tmpfs/">https://hub.docker.com/r/andir/postgresql-tmpfs/</a>) or if you prefer to build it on your own you can download the Dockerfile on GitHub (<a class="reference external" href="https://github.com/andir/postgresql-tmpfs">https://github.com/andir/postgresql-tmpfs</a>).</p>
+<p>Now that we are past the introductional blabla here are the systemd unit files I'm using to acheive this:</p>
+<script src="https://gist.github.com/d8307bcead6d83945db462698163ff40.js"></script><noscript>
+<pre class="literal-block">
+[Service]
+ExecStart=/usr/bin/docker run --rm --shm-size=2g -name psql-tmpfs -p 127.0.0.1:5434:5432 -t andir/postgresql-tmpfs
+ExecStartPost=/bin/sleep 15
+ExecStop=/usr/bin/docker stop psql-tmpfs
+
+</pre>
+</noscript>
+<p>You can either put those unit files in <cite>/etc/systemd/system</cite> or install them as systemd-user units in <cite>~/.config/systemd/user</cite>.</p>
+<pre class="code bash"><a name="rest_code_4f51ea26d22f46e2b22002d06672b2da-1"></a>systemctl daemon-reload
+<a name="rest_code_4f51ea26d22f46e2b22002d06672b2da-2"></a>systemctl <span class="nb">enable</span> postgresql-docker.socket
+</pre>
+<p>If you try to connect to the postgresql server (<code>nc 127.0.0.1 5432</code>) you can observe the container while it is starting (<code>journalctl -f</code>).</p>
+<p>The default username, password and datbase name is <cite>postgres</cite>. You can change that by modifying the startup arguments of the docker container. Those are documented at <a class="reference external" href="https://hub.docker.com/_/postgres/">https://hub.docker.com/_/postgres/</a>.</p>
+<p>Happy data trashing \o/</p>
+<p>P.S.: If you've an idea on how to stop the service after x minutes of inactivity please let me know. Stopping the service manually isn't really what I'm after.</p>
+</div>
+    </div>
+    </article>
+</div>
+
+
+
+        
+       <script>var disqus_shortname="andir";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script>
+</div>
+        <!--End of body content-->
+
+        <footer id="footer">
+            Contents © 2016         <a href="mailto:andreas@rammhold.de">Andreas Rammhold</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+        </footer>
+</div>
+</div>
+
+
+            <script src="assets/js/jquery.min.js"></script><script src="assets/js/bootstrap.min.js"></script><script src="assets/js/moment-with-locales.min.js"></script><script src="assets/js/fancydates.js"></script><script src="assets/js/jquery.colorbox-min.js"></script><script>$('a.image-reference:not(.islink) img:not(.islink)').parent().colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script><!-- fancy dates --><script>
+    moment.locale("en");
+    fancydates(0, "YYYY-MM-DD HH:mm");
+    </script><!-- end fancy dates -->
+</body>
+</html>
