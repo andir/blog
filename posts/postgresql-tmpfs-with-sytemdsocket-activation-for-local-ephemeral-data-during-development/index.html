@@ -103,7 +103,7 @@ In my case I have to ru'>
 <p>In my case I have to run a local postgresql server on my notebook. I asked myself: I'm not always developing on that piece of software, and I do not always require or want a local postgresql server. What can I do about that?!?</p>
 <p>On top of that using my precious SSD to store data I am going to delete anyway souds like a waste (or money). In my development environment I can and want to safely wipe the data often. Also most of the database load comes from running test cases anyway. That stuff doesn't need to end up on my (slow, compared to RAM) disk. Using a tmpfs for that kind of stuff sounds much saner to me.</p>
 <p>The part of running a repetitive clean database setup sounded like the use case for a container based thing. These days docker is pretty "hot" and it solves the issue of distributing re-useable images. There is an official postgresql image on docker hub for various versions of postgresql. I've simply build a new image based on that. It is available on docker hub (<a class="reference external" href="https://hub.docker.com/r/andir/postgresql-tmpfs/">https://hub.docker.com/r/andir/postgresql-tmpfs/</a>) or if you prefer to build it on your own you can download the Dockerfile on GitHub (<a class="reference external" href="https://github.com/andir/postgresql-tmpfs">https://github.com/andir/postgresql-tmpfs</a>).</p>
-<p>Now that we are past the introductional blabla here are the systemd unit files I'm using to acheive this:</p>
+<p>Now that we are past the introductional blabla here are the systemd unit files I'm using to achieve this:</p>
 <script src="https://gist.github.com/d8307bcead6d83945db462698163ff40.js"></script><noscript>
 <pre class="literal-block">
 [Service]
@@ -114,11 +114,11 @@ ExecStop=/usr/bin/docker stop psql-tmpfs
 </pre>
 </noscript>
 <p>You can either put those unit files in <cite>/etc/systemd/system</cite> or install them as systemd-user units in <cite>~/.config/systemd/user</cite>.</p>
-<pre class="code bash"><a name="rest_code_6c1b09d7a5cd4ea38a1b41248f644177-1"></a>systemctl daemon-reload
-<a name="rest_code_6c1b09d7a5cd4ea38a1b41248f644177-2"></a>systemctl <span class="nb">enable</span> postgresql-docker.socket
+<pre class="code bash"><a name="rest_code_486bdde754fe4786a5cd1c017fe2af20-1"></a>systemctl daemon-reload
+<a name="rest_code_486bdde754fe4786a5cd1c017fe2af20-2"></a>systemctl <span class="nb">enable</span> postgresql-docker.socket
 </pre>
 <p>If you try to connect to the postgresql server (<code>nc 127.0.0.1 5432</code>) you can observe the container while it is starting (<code>journalctl -f</code>).</p>
-<p>The default username, password and datbase name is <cite>postgres</cite>. You can change that by modifying the startup arguments of the docker container. Those are documented at <a class="reference external" href="https://hub.docker.com/_/postgres/">https://hub.docker.com/_/postgres/</a>.</p>
+<p>The default username, password and database name is <cite>postgres</cite>. You can change that by modifying the startup arguments of the docker container. Those are documented at <a class="reference external" href="https://hub.docker.com/_/postgres/">https://hub.docker.com/_/postgres/</a>.</p>
 <p>Happy data trashing \o/</p>
 <p>P.S.: If you've an idea on how to stop the service after x minutes of inactivity please let me know. Stopping the service manually isn't really what I'm after.</p>
 </div>
