@@ -107,6 +107,7 @@ In my case I have to ru'>
 <script src="https://gist.github.com/d8307bcead6d83945db462698163ff40.js"></script><noscript>
 <pre class="literal-block">
 [Service]
+ExecStartPre=-/usr/bin/docker rm psql-tmpfs
 ExecStart=/usr/bin/docker run --rm --shm-size=2g -name psql-tmpfs -p 127.0.0.1:5434:5432 -t andir/postgresql-tmpfs
 ExecStartPost=/bin/sleep 15
 ExecStop=/usr/bin/docker stop psql-tmpfs
@@ -114,8 +115,8 @@ ExecStop=/usr/bin/docker stop psql-tmpfs
 </pre>
 </noscript>
 <p>You can either put those unit files in <cite>/etc/systemd/system</cite> or install them as systemd-user units in <cite>~/.config/systemd/user</cite>.</p>
-<pre class="code bash"><a name="rest_code_486bdde754fe4786a5cd1c017fe2af20-1"></a>systemctl daemon-reload
-<a name="rest_code_486bdde754fe4786a5cd1c017fe2af20-2"></a>systemctl <span class="nb">enable</span> postgresql-docker.socket
+<pre class="code bash"><a name="rest_code_d33d0d3477a046f7b0fe8ab28ebd8e6a-1"></a>systemctl daemon-reload
+<a name="rest_code_d33d0d3477a046f7b0fe8ab28ebd8e6a-2"></a>systemctl <span class="nb">enable</span> postgresql-docker.socket
 </pre>
 <p>If you try to connect to the postgresql server (<code>nc 127.0.0.1 5432</code>) you can observe the container while it is starting (<code>journalctl -f</code>).</p>
 <p>The default username, password and database name is <cite>postgres</cite>. You can change that by modifying the startup arguments of the docker container. Those are documented at <a class="reference external" href="https://hub.docker.com/_/postgres/">https://hub.docker.com/_/postgres/</a>.</p>
