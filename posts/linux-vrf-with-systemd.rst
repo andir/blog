@@ -8,7 +8,7 @@
 .. type: text
 
 
-While working on a systemd-networkd patch to implement (at least basic) VRF interfaces I did write <linux-ip-vrf>. This post should give you a brief example on how you can create a VRF with systemd-networkd.
+While working on a systemd-networkd patch to implement (at least basic) VRF interfaces I did write :doc:`my other post <linux-ip-vrf>`. This post should give you a brief example on how you can create a VRF with systemd-networkd.
 
 At this point it really only created the interfaces and enslaves potential customer interfaces to a given VRF.
 
