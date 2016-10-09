@@ -17,7 +17,7 @@ You still have to implement all the `ip rule`-stuff yourself. For example a `sys
 
 First you've to create the systemd.netdev `vrf-customer1.netdev` file:
 
-.. gist:: https://gist.github.com/andir/146803a9343e04fffabc8e7105dff3cd#file-vrf-customer1-netdev
+.. gist:: https://gist.github.com/andir/146803a9343e04fffabc8e7105dff3cd
 
 
 After restarting `systemd-networkd` with `systemctl restart systemd-networkd` you should see the corresponding interface:
