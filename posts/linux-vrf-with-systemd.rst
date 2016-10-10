@@ -12,7 +12,7 @@ While working on a systemd-networkd patch to implement (at least basic) VRF inte
 
 At this point it really only created the interfaces and enslaves potential customer interfaces to a given VRF.
 
-You still have to implement all the `ip rule`-stuff yourself. For example a `systemd.unit` file might be the right approach wich is triggert/started after the network is "up".
+You still have to implement all the `ip rule`-stuff yourself. For example a `systemd.unit` file might be the right approach which is executed/started after the network is "up".
 
 
 First you've to create the systemd.netdev `vrf-customer1.netdev` file:
