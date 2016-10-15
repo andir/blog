@@ -49,4 +49,4 @@ Restarting `systemd-networkd` again and checking the status using `ip -d link` g
 Again note the last line which states `vrf_slave table 42`. Also in the first line you can see that it belongs to the VRF `vrf-customer`.
 
 
-And that is all for now. You still have to add the `ip rule` commands in some way or another (there is no support in systemd-networkd yet and I've not had a good idea without inventing `ip rule` management in systemd).
+And that is all for now. You still have to add the `ip rule` commands in some way or another (there is no support in systemd-networkd yet and I did not have a good idea without inventing `ip rule` management in systemd).
