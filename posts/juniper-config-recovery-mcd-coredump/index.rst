@@ -25,7 +25,7 @@ The `member ge0/0/2` is missing a `-` between `ge` and `0/0/2`. Juniper (for wha
     pid 75982 (mgd), uid 0: exited on signal 11 (core dumped)
 
 
-Recovering from that case is actually not that hard. You just have to know the right command ;-)
+Recovering from that case is actually not that hard. You just know the right command(s) ;-)
 
 You can load an older configuration via the `load override <config file>` command. I did also try the `load replace <config file>` command but that also segfaulted..
 
