@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Weird random notes (juniper)</title><link>https://andir.github.io/</link><description></description><atom:link href="https://andir.github.io/categories/juniper.xml" type="application/rss+xml" rel="self"></atom:link><language>en</language><lastBuildDate>Tue, 08 Nov 2016 16:07:16 GMT</lastBuildDate><generator>https://getnikola.com/</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Juniper MCD decided to coredump on commit and rollback</title><link>https://andir.github.io/posts/juniper-config-recovery-mcd-coredump/</link><dc:creator>Andreas Rammhold</dc:creator><description>&lt;div&gt;&lt;p&gt;On a Juniper EX3300 a colleague of mine entered an invalid statement:&lt;/p&gt;
+&lt;!-- code::: shell
+
+interface-range some_ports {
+    member ge0/0/2;
+    member-range ge-0/0/0 to ge-0/0/1;
+} --&gt;
+&lt;p&gt;The &lt;cite&gt;member ge0/0/2&lt;/cite&gt; is missing a &lt;cite&gt;-&lt;/cite&gt; between &lt;cite&gt;ge&lt;/cite&gt; and &lt;cite&gt;0/0/2&lt;/cite&gt;. Juniper (for whatever reason) accepted the input but &lt;cite&gt;mcd&lt;/cite&gt; decided to segfault when asked to delete or rollback the configuration.&lt;/p&gt;
+&lt;!-- code::: shell
+
+pid 75982 (mgd), uid 0: exited on signal 11 (core dumped) --&gt;
+&lt;p&gt;Recovering from that case is actually not that hard. You just have to know the right command ;-)&lt;/p&gt;
+&lt;p&gt;You can load an older configuration via the &lt;cite&gt;load override &amp;lt;config file&amp;gt;&lt;/cite&gt; command. I did also try the &lt;cite&gt;load replace &amp;lt;config file&amp;gt;&lt;/cite&gt; command but that also segfaulted..&lt;/p&gt;
+&lt;!-- code::: shell
+
+andi@foo# load override ?
+Possible completions:
+  &lt;filename&gt;           Filename (URL, local, remote, or floppy)
+  db/                  Last changed: Oct 27 10:44:35
+  juniper.conf+.gz     Size: 6000, Last changed: Nov 08 15:12:55
+  juniper.conf.1.gz    Size: 5913, Last changed: Jun 30 13:36:52
+  juniper.conf.2.gz    Size: 5881, Last changed: Jun 30 12:59:25
+  juniper.conf.3.gz    Size: 5280, Last changed: Jun 30 12:54:02
+  [...]
+{master:0}[edit]
+andi@foo# load override juniper.conf+.gz
+load complete --&gt;
+&lt;p&gt;In my case the &lt;cite&gt;juniper.conf+.gz&lt;/cite&gt; was the desired config file. I recommend inspecting those files before loading them (they are stored in &lt;cite&gt;/config/&lt;/cite&gt;).&lt;/p&gt;&lt;/div&gt;</description><category>config</category><category>juniper</category><category>recovery</category><guid>https://andir.github.io/posts/juniper-config-recovery-mcd-coredump/</guid><pubDate>Tue, 08 Nov 2016 15:00:00 GMT</pubDate></item></channel></rss>

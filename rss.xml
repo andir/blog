@@ -1,7 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0"><channel><title>Weird random notes</title><link>https://andir.github.io/</link><description>Some notes I like to keep around</description><atom:link type="application/rss+xml" href="https://andir.github.io/rss.xml" rel="self"></atom:link><language>en</language><lastBuildDate>Sun, 09 Oct 2016 13:24:24 GMT</lastBuildDate><generator>https://getnikola.com/</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Using VRFs with linux and systemd-networkd</title><link>https://andir.github.io/posts/linux-ip-vrf-systemd-networkd/</link><dc:creator>Andreas Rammhold</dc:creator><description>&lt;div&gt;&lt;p&gt;While working on a systemd-networkd patch to implement (at least basic) VRF interfaces I did write &lt;a class="reference external" href="https://andir.github.io/posts/linux-ip-vrf/"&gt;my other post&lt;/a&gt;. This post should give you a brief example on how you can create a VRF with systemd-networkd.&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Weird random notes</title><link>https://andir.github.io/</link><description>Some notes I like to keep around</description><atom:link href="https://andir.github.io/rss.xml" type="application/rss+xml" rel="self"></atom:link><language>en</language><lastBuildDate>Tue, 08 Nov 2016 16:07:16 GMT</lastBuildDate><generator>https://getnikola.com/</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Juniper MCD decided to coredump on commit and rollback</title><link>https://andir.github.io/posts/juniper-config-recovery-mcd-coredump/</link><dc:creator>Andreas Rammhold</dc:creator><description>&lt;div&gt;&lt;p&gt;On a Juniper EX3300 a colleague of mine entered an invalid statement:&lt;/p&gt;
+&lt;!-- code::: shell
+
+interface-range some_ports {
+    member ge0/0/2;
+    member-range ge-0/0/0 to ge-0/0/1;
+} --&gt;
+&lt;p&gt;The &lt;cite&gt;member ge0/0/2&lt;/cite&gt; is missing a &lt;cite&gt;-&lt;/cite&gt; between &lt;cite&gt;ge&lt;/cite&gt; and &lt;cite&gt;0/0/2&lt;/cite&gt;. Juniper (for whatever reason) accepted the input but &lt;cite&gt;mcd&lt;/cite&gt; decided to segfault when asked to delete or rollback the configuration.&lt;/p&gt;
+&lt;!-- code::: shell
+
+pid 75982 (mgd), uid 0: exited on signal 11 (core dumped) --&gt;
+&lt;p&gt;Recovering from that case is actually not that hard. You just have to know the right command ;-)&lt;/p&gt;
+&lt;p&gt;You can load an older configuration via the &lt;cite&gt;load override &amp;lt;config file&amp;gt;&lt;/cite&gt; command. I did also try the &lt;cite&gt;load replace &amp;lt;config file&amp;gt;&lt;/cite&gt; command but that also segfaulted..&lt;/p&gt;
+&lt;!-- code::: shell
+
+andi@foo# load override ?
+Possible completions:
+  &lt;filename&gt;           Filename (URL, local, remote, or floppy)
+  db/                  Last changed: Oct 27 10:44:35
+  juniper.conf+.gz     Size: 6000, Last changed: Nov 08 15:12:55
+  juniper.conf.1.gz    Size: 5913, Last changed: Jun 30 13:36:52
+  juniper.conf.2.gz    Size: 5881, Last changed: Jun 30 12:59:25
+  juniper.conf.3.gz    Size: 5280, Last changed: Jun 30 12:54:02
+  [...]
+{master:0}[edit]
+andi@foo# load override juniper.conf+.gz
+load complete --&gt;
+&lt;p&gt;In my case the &lt;cite&gt;juniper.conf+.gz&lt;/cite&gt; was the desired config file. I recommend inspecting those files before loading them (they are stored in &lt;cite&gt;/config/&lt;/cite&gt;).&lt;/p&gt;&lt;/div&gt;</description><category>config</category><category>juniper</category><category>recovery</category><guid>https://andir.github.io/posts/juniper-config-recovery-mcd-coredump/</guid><pubDate>Tue, 08 Nov 2016 15:00:00 GMT</pubDate></item><item><title>Using VRFs with linux and systemd-networkd</title><link>https://andir.github.io/posts/linux-ip-vrf-systemd-networkd/</link><dc:creator>Andreas Rammhold</dc:creator><description>&lt;div&gt;&lt;p&gt;While working on a systemd-networkd patch to implement (at least basic) VRF interfaces I did write &lt;a class="reference external" href="https://andir.github.io/posts/linux-ip-vrf/"&gt;my other post&lt;/a&gt;. This post should give you a brief example on how you can create a VRF with systemd-networkd.&lt;/p&gt;
 &lt;p&gt;At this point it really only created the interfaces and enslaves potential customer interfaces to a given VRF.&lt;/p&gt;
-&lt;p&gt;You still have to implement all the &lt;cite&gt;ip rule&lt;/cite&gt;-stuff yourself. For example a &lt;cite&gt;systemd.unit&lt;/cite&gt; file might be the right approach wich is triggert/started after the network is "up".&lt;/p&gt;
+&lt;p&gt;You still have to implement all the &lt;cite&gt;ip rule&lt;/cite&gt;-stuff yourself. For example a &lt;cite&gt;systemd.unit&lt;/cite&gt; file might be the right approach which is executed/started after the network is "up".&lt;/p&gt;
 &lt;p&gt;First you've to create the systemd.netdev &lt;cite&gt;vrf-customer1.netdev&lt;/cite&gt; file:&lt;/p&gt;
 &lt;script src="https://gist.github.com/146803a9343e04fffabc8e7105dff3cd.js"&gt;&lt;/script&gt;&lt;noscript&gt;&lt;pre class="literal-block"&gt;
 [NetDev]
@@ -12,10 +39,10 @@ Kind=vrf
 TableId=42
 &lt;/pre&gt;
 &lt;/noscript&gt;&lt;p&gt;After restarting &lt;cite&gt;systemd-networkd&lt;/cite&gt; with &lt;cite&gt;systemctl restart systemd-networkd&lt;/cite&gt; you should see the corresponding interface:&lt;/p&gt;
-&lt;pre class="code shell"&gt;&lt;a name="rest_code_08a7b55635174396ac47dfc63ad04522-1"&gt;&lt;/a&gt;$ ip -d link show dev vrf-customer1
-&lt;a name="rest_code_08a7b55635174396ac47dfc63ad04522-2"&gt;&lt;/a&gt;9: vrf-customer1: &amp;lt;NOARP,MASTER&amp;gt; mtu &lt;span class="m"&gt;1500&lt;/span&gt; qdisc noop state DOWN mode DEFAULT group default qlen 1000
-&lt;a name="rest_code_08a7b55635174396ac47dfc63ad04522-3"&gt;&lt;/a&gt;    link/ether 02:74:c7:e1:de:64 brd ff:ff:ff:ff:ff:ff promiscuity 0
-&lt;a name="rest_code_08a7b55635174396ac47dfc63ad04522-4"&gt;&lt;/a&gt;    vrf table &lt;span class="m"&gt;42&lt;/span&gt; addrgenmode eui64 numtxqueues &lt;span class="m"&gt;1&lt;/span&gt; numrxqueues 1
+&lt;pre class="code shell"&gt;&lt;a name="rest_code_f5b5c9b63b014452a85050889e28c021-1"&gt;&lt;/a&gt;$ ip -d link show dev vrf-customer1
+&lt;a name="rest_code_f5b5c9b63b014452a85050889e28c021-2"&gt;&lt;/a&gt;9: vrf-customer1: &amp;lt;NOARP,MASTER&amp;gt; mtu &lt;span class="m"&gt;1500&lt;/span&gt; qdisc noop state DOWN mode DEFAULT group default qlen 1000
+&lt;a name="rest_code_f5b5c9b63b014452a85050889e28c021-3"&gt;&lt;/a&gt;    link/ether 02:74:c7:e1:de:64 brd ff:ff:ff:ff:ff:ff promiscuity 0
+&lt;a name="rest_code_f5b5c9b63b014452a85050889e28c021-4"&gt;&lt;/a&gt;    vrf table &lt;span class="m"&gt;42&lt;/span&gt; addrgenmode eui64 numtxqueues &lt;span class="m"&gt;1&lt;/span&gt; numrxqueues 1
 &lt;/pre&gt;&lt;p&gt;Note the last line which states &lt;cite&gt;vrf table 42&lt;/cite&gt;.&lt;/p&gt;
 &lt;p&gt;To add an interface to the VRF you'll have to modify/create the corresponding .network file. This is how the file &lt;cite&gt;/etc/systemd/network/enp0s31f6.network&lt;/cite&gt; would look on my notebook:&lt;/p&gt;
 &lt;script src="https://gist.github.com/ee155492e3af2f83df39b0808fda5718.js"&gt;&lt;/script&gt;&lt;noscript&gt;&lt;pre class="literal-block"&gt;
@@ -28,12 +55,12 @@ VRF=vrf-customer1
 
 &lt;/pre&gt;
 &lt;/noscript&gt;&lt;p&gt;Restarting &lt;cite&gt;systemd-networkd&lt;/cite&gt; again and checking the status using &lt;cite&gt;ip -d link&lt;/cite&gt; gives us:&lt;/p&gt;
-&lt;pre class="code shell"&gt;&lt;a name="rest_code_9afddf0ce38d46d290c9b8617abd1d5b-1"&gt;&lt;/a&gt;&lt;span class="nv"&gt;$ip&lt;/span&gt; -d link show  dev enp0s31f6
-&lt;a name="rest_code_9afddf0ce38d46d290c9b8617abd1d5b-2"&gt;&lt;/a&gt;3: enp0s31f6: &amp;lt;NO-CARRIER,BROADCAST,MULTICAST,UP&amp;gt; mtu &lt;span class="m"&gt;1500&lt;/span&gt; qdisc fq_codel master vrf-customer1 state DOWN mode DEFAULT group default qlen 1000
-&lt;a name="rest_code_9afddf0ce38d46d290c9b8617abd1d5b-3"&gt;&lt;/a&gt; link/ether 50:7b:9d:cf:34:dc brd ff:ff:ff:ff:ff:ff promiscuity 0
-&lt;a name="rest_code_9afddf0ce38d46d290c9b8617abd1d5b-4"&gt;&lt;/a&gt; vrf_slave table &lt;span class="m"&gt;42&lt;/span&gt; addrgenmode eui64 numtxqueues &lt;span class="m"&gt;1&lt;/span&gt; numrxqueues 1
+&lt;pre class="code shell"&gt;&lt;a name="rest_code_bee2336da3344214820beca936074673-1"&gt;&lt;/a&gt;&lt;span class="nv"&gt;$ip&lt;/span&gt; -d link show  dev enp0s31f6
+&lt;a name="rest_code_bee2336da3344214820beca936074673-2"&gt;&lt;/a&gt;3: enp0s31f6: &amp;lt;NO-CARRIER,BROADCAST,MULTICAST,UP&amp;gt; mtu &lt;span class="m"&gt;1500&lt;/span&gt; qdisc fq_codel master vrf-customer1 state DOWN mode DEFAULT group default qlen 1000
+&lt;a name="rest_code_bee2336da3344214820beca936074673-3"&gt;&lt;/a&gt; link/ether 50:7b:9d:cf:34:dc brd ff:ff:ff:ff:ff:ff promiscuity 0
+&lt;a name="rest_code_bee2336da3344214820beca936074673-4"&gt;&lt;/a&gt; vrf_slave table &lt;span class="m"&gt;42&lt;/span&gt; addrgenmode eui64 numtxqueues &lt;span class="m"&gt;1&lt;/span&gt; numrxqueues 1
 &lt;/pre&gt;&lt;p&gt;Again note the last line which states &lt;cite&gt;vrf_slave table 42&lt;/cite&gt;. Also in the first line you can see that it belongs to the VRF &lt;cite&gt;vrf-customer&lt;/cite&gt;.&lt;/p&gt;
-&lt;p&gt;And that is all for now. You still have to add the &lt;cite&gt;ip rule&lt;/cite&gt; commands in some way or another (there is no support in systemd-networkd yet and I've not had a good idea without inventing &lt;cite&gt;ip rule&lt;/cite&gt; management in systemd).&lt;/p&gt;&lt;/div&gt;</description><category>iproute2</category><category>linux</category><category>routing</category><category>systemd</category><category>vrf</category><guid>https://andir.github.io/posts/linux-ip-vrf-systemd-networkd/</guid><pubDate>Sun, 09 Oct 2016 13:00:00 GMT</pubDate></item><item><title>Using VRFs with linux</title><link>https://andir.github.io/posts/linux-ip-vrf/</link><dc:creator>Andreas Rammhold</dc:creator><description>&lt;div&gt;&lt;p&gt;Ever since I've heard about VRF support (or VRF-lite like it is called in Documentation/network/vrf.txt) I wanted to start tinkering with it.
+&lt;p&gt;And that is all for now. You still have to add the &lt;cite&gt;ip rule&lt;/cite&gt; commands in some way or another (there is no support in systemd-networkd yet and I did not have a good idea without inventing &lt;cite&gt;ip rule&lt;/cite&gt; management in systemd).&lt;/p&gt;&lt;/div&gt;</description><category>iproute2</category><category>linux</category><category>routing</category><category>systemd</category><category>vrf</category><guid>https://andir.github.io/posts/linux-ip-vrf-systemd-networkd/</guid><pubDate>Sun, 09 Oct 2016 13:00:00 GMT</pubDate></item><item><title>Using VRFs with linux</title><link>https://andir.github.io/posts/linux-ip-vrf/</link><dc:creator>Andreas Rammhold</dc:creator><description>&lt;div&gt;&lt;p&gt;Ever since I've heard about VRF support (or VRF-lite like it is called in Documentation/network/vrf.txt) I wanted to start tinkering with it.
 Since the topic is currently only covered in the previously mentioned linux kernel documentation I thought it would be a good idea to post some notes.&lt;/p&gt;
 &lt;p&gt;It basically boils down to adding an VRF interface and creating two &lt;cite&gt;ip rule&lt;/cite&gt;-entries.&lt;/p&gt;
 &lt;p&gt;I'm using a local VM with ArchLinux since the VRF feature seems to require a rather recent kernel. My experience with kernels below version 4.6 weren't that great.&lt;/p&gt;

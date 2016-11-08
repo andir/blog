@@ -17,6 +17,7 @@
 <!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="description" itemprop="description" content="Using vrf interfaces with systemd-networkd">
 <meta name="author" content="Andreas Rammhold">
 <link rel="prev" href="../linux-ip-vrf/" title="Using VRFs with linux" type="text/html">
+<link rel="next" href="../juniper-config-recovery-mcd-coredump/" title="Juniper MCD decided to coredump on commit and rollback" type="text/html">
 <meta property="og:site_name" content="Weird random notes">
 <meta property="og:title" content="Using VRFs with linux and systemd-networkd">
 <meta property="og:url" content="https://andir.github.io/posts/linux-ip-vrf-systemd-networkd/">
@@ -104,7 +105,7 @@
     <div>
 <p>While working on a systemd-networkd patch to implement (at least basic) VRF interfaces I did write <a class="reference external" href="../linux-ip-vrf/">my other post</a>. This post should give you a brief example on how you can create a VRF with systemd-networkd.</p>
 <p>At this point it really only created the interfaces and enslaves potential customer interfaces to a given VRF.</p>
-<p>You still have to implement all the <cite>ip rule</cite>-stuff yourself. For example a <cite>systemd.unit</cite> file might be the right approach wich is triggert/started after the network is "up".</p>
+<p>You still have to implement all the <cite>ip rule</cite>-stuff yourself. For example a <cite>systemd.unit</cite> file might be the right approach which is executed/started after the network is "up".</p>
 <p>First you've to create the systemd.netdev <cite>vrf-customer1.netdev</cite> file:</p>
 <script src="https://gist.github.com/146803a9343e04fffabc8e7105dff3cd.js"></script><noscript>
 <pre class="literal-block">
@@ -117,10 +118,10 @@ TableId=42
 </pre>
 </noscript>
 <p>After restarting <cite>systemd-networkd</cite> with <cite>systemctl restart systemd-networkd</cite> you should see the corresponding interface:</p>
-<pre class="code shell"><a name="rest_code_08a7b55635174396ac47dfc63ad04522-1"></a>$ ip -d link show dev vrf-customer1
-<a name="rest_code_08a7b55635174396ac47dfc63ad04522-2"></a>9: vrf-customer1: &lt;NOARP,MASTER&gt; mtu <span class="m">1500</span> qdisc noop state DOWN mode DEFAULT group default qlen 1000
-<a name="rest_code_08a7b55635174396ac47dfc63ad04522-3"></a>    link/ether 02:74:c7:e1:de:64 brd ff:ff:ff:ff:ff:ff promiscuity 0
-<a name="rest_code_08a7b55635174396ac47dfc63ad04522-4"></a>    vrf table <span class="m">42</span> addrgenmode eui64 numtxqueues <span class="m">1</span> numrxqueues 1
+<pre class="code shell"><a name="rest_code_f5b5c9b63b014452a85050889e28c021-1"></a>$ ip -d link show dev vrf-customer1
+<a name="rest_code_f5b5c9b63b014452a85050889e28c021-2"></a>9: vrf-customer1: &lt;NOARP,MASTER&gt; mtu <span class="m">1500</span> qdisc noop state DOWN mode DEFAULT group default qlen 1000
+<a name="rest_code_f5b5c9b63b014452a85050889e28c021-3"></a>    link/ether 02:74:c7:e1:de:64 brd ff:ff:ff:ff:ff:ff promiscuity 0
+<a name="rest_code_f5b5c9b63b014452a85050889e28c021-4"></a>    vrf table <span class="m">42</span> addrgenmode eui64 numtxqueues <span class="m">1</span> numrxqueues 1
 </pre>
 <p>Note the last line which states <cite>vrf table 42</cite>.</p>
 <p>To add an interface to the VRF you'll have to modify/create the corresponding .network file. This is how the file <cite>/etc/systemd/network/enp0s31f6.network</cite> would look on my notebook:</p>
@@ -136,13 +137,13 @@ VRF=vrf-customer1
 </pre>
 </noscript>
 <p>Restarting <cite>systemd-networkd</cite> again and checking the status using <cite>ip -d link</cite> gives us:</p>
-<pre class="code shell"><a name="rest_code_9afddf0ce38d46d290c9b8617abd1d5b-1"></a><span class="nv">$ip</span> -d link show  dev enp0s31f6
-<a name="rest_code_9afddf0ce38d46d290c9b8617abd1d5b-2"></a>3: enp0s31f6: &lt;NO-CARRIER,BROADCAST,MULTICAST,UP&gt; mtu <span class="m">1500</span> qdisc fq_codel master vrf-customer1 state DOWN mode DEFAULT group default qlen 1000
-<a name="rest_code_9afddf0ce38d46d290c9b8617abd1d5b-3"></a> link/ether 50:7b:9d:cf:34:dc brd ff:ff:ff:ff:ff:ff promiscuity 0
-<a name="rest_code_9afddf0ce38d46d290c9b8617abd1d5b-4"></a> vrf_slave table <span class="m">42</span> addrgenmode eui64 numtxqueues <span class="m">1</span> numrxqueues 1
+<pre class="code shell"><a name="rest_code_bee2336da3344214820beca936074673-1"></a><span class="nv">$ip</span> -d link show  dev enp0s31f6
+<a name="rest_code_bee2336da3344214820beca936074673-2"></a>3: enp0s31f6: &lt;NO-CARRIER,BROADCAST,MULTICAST,UP&gt; mtu <span class="m">1500</span> qdisc fq_codel master vrf-customer1 state DOWN mode DEFAULT group default qlen 1000
+<a name="rest_code_bee2336da3344214820beca936074673-3"></a> link/ether 50:7b:9d:cf:34:dc brd ff:ff:ff:ff:ff:ff promiscuity 0
+<a name="rest_code_bee2336da3344214820beca936074673-4"></a> vrf_slave table <span class="m">42</span> addrgenmode eui64 numtxqueues <span class="m">1</span> numrxqueues 1
 </pre>
 <p>Again note the last line which states <cite>vrf_slave table 42</cite>. Also in the first line you can see that it belongs to the VRF <cite>vrf-customer</cite>.</p>
-<p>And that is all for now. You still have to add the <cite>ip rule</cite> commands in some way or another (there is no support in systemd-networkd yet and I've not had a good idea without inventing <cite>ip rule</cite> management in systemd).</p>
+<p>And that is all for now. You still have to add the <cite>ip rule</cite> commands in some way or another (there is no support in systemd-networkd yet and I did not have a good idea without inventing <cite>ip rule</cite> management in systemd).</p>
 </div>
     </div>
     <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
@@ -155,6 +156,9 @@ VRF=vrf-customer1
 <ul class="pager hidden-print">
 <li class="previous">
                 <a href="../linux-ip-vrf/" rel="prev" title="Using VRFs with linux">Previous post</a>
+            </li>
+            <li class="next">
+                <a href="../juniper-config-recovery-mcd-coredump/" rel="next" title="Juniper MCD decided to coredump on commit and rollback">Next post</a>
             </li>
         </ul></nav></aside><section class="comments hidden-print"><h2>Comments</h2>
         
