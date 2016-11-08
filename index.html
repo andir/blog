@@ -80,32 +80,29 @@
     </header><div class="e-content entry-content">
     <div>
 <p>On a Juniper EX3300 a colleague of mine entered an invalid statement:</p>
-<!-- code::: shell
-
-interface-range some_ports {
-    member ge0/0/2;
-    member-range ge-0/0/0 to ge-0/0/1;
-} -->
+<pre class="code shell"><a name="rest_code_75cef76e518e48939debe00ae0759f89-1"></a>interface-range some_ports <span class="o">{</span>
+<a name="rest_code_75cef76e518e48939debe00ae0759f89-2"></a>    member ge0/0/2<span class="p">;</span>
+<a name="rest_code_75cef76e518e48939debe00ae0759f89-3"></a>    member-range ge-0/0/0 to ge-0/0/1<span class="p">;</span>
+<a name="rest_code_75cef76e518e48939debe00ae0759f89-4"></a><span class="o">}</span>
+</pre>
 <p>The <cite>member ge0/0/2</cite> is missing a <cite>-</cite> between <cite>ge</cite> and <cite>0/0/2</cite>. Juniper (for whatever reason) accepted the input but <cite>mcd</cite> decided to segfault when asked to delete or rollback the configuration.</p>
-<!-- code::: shell
-
-pid 75982 (mgd), uid 0: exited on signal 11 (core dumped) -->
+<pre class="code shell"><a name="rest_code_d03ae3ed8d6943a49cd84b5550351c6e-1"></a>pid <span class="m">75982</span> <span class="o">(</span>mgd<span class="o">)</span>, uid 0: exited on signal <span class="m">11</span> <span class="o">(</span>core dumped<span class="o">)</span>
+</pre>
 <p>Recovering from that case is actually not that hard. You just have to know the right command ;-)</p>
 <p>You can load an older configuration via the <cite>load override &lt;config file&gt;</cite> command. I did also try the <cite>load replace &lt;config file&gt;</cite> command but that also segfaulted..</p>
-<!-- code::: shell
-
-andi@foo# load override ?
-Possible completions:
-  <filename>           Filename (URL, local, remote, or floppy)
-  db/                  Last changed: Oct 27 10:44:35
-  juniper.conf+.gz     Size: 6000, Last changed: Nov 08 15:12:55
-  juniper.conf.1.gz    Size: 5913, Last changed: Jun 30 13:36:52
-  juniper.conf.2.gz    Size: 5881, Last changed: Jun 30 12:59:25
-  juniper.conf.3.gz    Size: 5280, Last changed: Jun 30 12:54:02
-  [...]
-{master:0}[edit]
-andi@foo# load override juniper.conf+.gz
-load complete -->
+<pre class="code shell"><a name="rest_code_354bd1a85d96433884283b4d35a1b1cb-1"></a>andi@foo# load override ?
+<a name="rest_code_354bd1a85d96433884283b4d35a1b1cb-2"></a>Possible completions:
+<a name="rest_code_354bd1a85d96433884283b4d35a1b1cb-3"></a>  &lt;filename&gt;           Filename <span class="o">(</span>URL, local, remote, or floppy<span class="o">)</span>
+<a name="rest_code_354bd1a85d96433884283b4d35a1b1cb-4"></a>  db/                  Last changed: Oct <span class="m">27</span> 10:44:35
+<a name="rest_code_354bd1a85d96433884283b4d35a1b1cb-5"></a>  juniper.conf+.gz     Size: 6000, Last changed: Nov <span class="m">08</span> 15:12:55
+<a name="rest_code_354bd1a85d96433884283b4d35a1b1cb-6"></a>  juniper.conf.1.gz    Size: 5913, Last changed: Jun <span class="m">30</span> 13:36:52
+<a name="rest_code_354bd1a85d96433884283b4d35a1b1cb-7"></a>  juniper.conf.2.gz    Size: 5881, Last changed: Jun <span class="m">30</span> 12:59:25
+<a name="rest_code_354bd1a85d96433884283b4d35a1b1cb-8"></a>  juniper.conf.3.gz    Size: 5280, Last changed: Jun <span class="m">30</span> 12:54:02
+<a name="rest_code_354bd1a85d96433884283b4d35a1b1cb-9"></a>  <span class="o">[</span>...<span class="o">]</span>
+<a name="rest_code_354bd1a85d96433884283b4d35a1b1cb-10"></a><span class="o">{</span>master:0<span class="o">}[</span>edit<span class="o">]</span>
+<a name="rest_code_354bd1a85d96433884283b4d35a1b1cb-11"></a>andi@foo# load override juniper.conf+.gz
+<a name="rest_code_354bd1a85d96433884283b4d35a1b1cb-12"></a>load <span class="nb">complete</span>
+</pre>
 <p>In my case the <cite>juniper.conf+.gz</cite> was the desired config file. I recommend inspecting those files before loading them (they are stored in <cite>/config/</cite>).</p>
 </div>
     </div>

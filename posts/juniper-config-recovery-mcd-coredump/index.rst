@@ -10,7 +10,7 @@
 
 On a Juniper EX3300 a colleague of mine entered an invalid statement:
 
-.. code::: shell
+.. code:: shell
 
     interface-range some_ports {
         member ge0/0/2;
@@ -20,7 +20,7 @@ On a Juniper EX3300 a colleague of mine entered an invalid statement:
 
 The `member ge0/0/2` is missing a `-` between `ge` and `0/0/2`. Juniper (for whatever reason) accepted the input but `mcd` decided to segfault when asked to delete or rollback the configuration.
 
-.. code::: shell
+.. code:: shell
 
     pid 75982 (mgd), uid 0: exited on signal 11 (core dumped)
 
@@ -29,7 +29,7 @@ Recovering from that case is actually not that hard. You just have to know the r
 
 You can load an older configuration via the `load override <config file>` command. I did also try the `load replace <config file>` command but that also segfaulted..
 
-.. code::: shell
+.. code:: shell
 
    andi@foo# load override ?
    Possible completions:
