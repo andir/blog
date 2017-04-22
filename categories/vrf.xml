@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Weird random notes (vrf)</title><link>https://andir.github.io/</link><description></description><atom:link href="https://andir.github.io/categories/vrf.xml" type="application/rss+xml" rel="self"></atom:link><language>en</language><lastBuildDate>Tue, 08 Nov 2016 16:06:28 GMT</lastBuildDate><generator>https://getnikola.com/</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Using VRFs with linux and systemd-networkd</title><link>https://andir.github.io/posts/linux-ip-vrf-systemd-networkd/</link><dc:creator>Andreas Rammhold</dc:creator><description>&lt;div&gt;&lt;p&gt;While working on a systemd-networkd patch to implement (at least basic) VRF interfaces I did write &lt;a class="reference external" href="https://andir.github.io/posts/linux-ip-vrf/"&gt;my other post&lt;/a&gt;. This post should give you a brief example on how you can create a VRF with systemd-networkd.&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Weird random notes (Posts about vrf)</title><link>https://andir.github.io/</link><description></description><atom:link href="https://andir.github.io/categories/vrf.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sat, 22 Apr 2017 16:51:29 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Using VRFs with linux and systemd-networkd</title><link>https://andir.github.io/posts/linux-ip-vrf-systemd-networkd/</link><dc:creator>Andreas Rammhold</dc:creator><description>&lt;div&gt;&lt;p&gt;While working on a systemd-networkd patch to implement (at least basic) VRF interfaces I did write &lt;a class="reference external" href="https://andir.github.io/posts/linux-ip-vrf/"&gt;my other post&lt;/a&gt;. This post should give you a brief example on how you can create a VRF with systemd-networkd.&lt;/p&gt;
 &lt;p&gt;At this point it really only created the interfaces and enslaves potential customer interfaces to a given VRF.&lt;/p&gt;
 &lt;p&gt;You still have to implement all the &lt;cite&gt;ip rule&lt;/cite&gt;-stuff yourself. For example a &lt;cite&gt;systemd.unit&lt;/cite&gt; file might be the right approach which is executed/started after the network is "up".&lt;/p&gt;
 &lt;p&gt;First you've to create the systemd.netdev &lt;cite&gt;vrf-customer1.netdev&lt;/cite&gt; file:&lt;/p&gt;
@@ -12,10 +12,10 @@ Kind=vrf
 TableId=42
 &lt;/pre&gt;
 &lt;/noscript&gt;&lt;p&gt;After restarting &lt;cite&gt;systemd-networkd&lt;/cite&gt; with &lt;cite&gt;systemctl restart systemd-networkd&lt;/cite&gt; you should see the corresponding interface:&lt;/p&gt;
-&lt;pre class="code shell"&gt;&lt;a name="rest_code_f5b5c9b63b014452a85050889e28c021-1"&gt;&lt;/a&gt;$ ip -d link show dev vrf-customer1
-&lt;a name="rest_code_f5b5c9b63b014452a85050889e28c021-2"&gt;&lt;/a&gt;9: vrf-customer1: &amp;lt;NOARP,MASTER&amp;gt; mtu &lt;span class="m"&gt;1500&lt;/span&gt; qdisc noop state DOWN mode DEFAULT group default qlen 1000
-&lt;a name="rest_code_f5b5c9b63b014452a85050889e28c021-3"&gt;&lt;/a&gt;    link/ether 02:74:c7:e1:de:64 brd ff:ff:ff:ff:ff:ff promiscuity 0
-&lt;a name="rest_code_f5b5c9b63b014452a85050889e28c021-4"&gt;&lt;/a&gt;    vrf table &lt;span class="m"&gt;42&lt;/span&gt; addrgenmode eui64 numtxqueues &lt;span class="m"&gt;1&lt;/span&gt; numrxqueues 1
+&lt;pre class="code shell"&gt;&lt;a name="rest_code_7f467dc80b4c47248f85ba80459c0523-1"&gt;&lt;/a&gt;$ ip -d link show dev vrf-customer1
+&lt;a name="rest_code_7f467dc80b4c47248f85ba80459c0523-2"&gt;&lt;/a&gt;&lt;span class="m"&gt;9&lt;/span&gt;: vrf-customer1: &amp;lt;NOARP,MASTER&amp;gt; mtu &lt;span class="m"&gt;1500&lt;/span&gt; qdisc noop state DOWN mode DEFAULT group default qlen &lt;span class="m"&gt;1000&lt;/span&gt;
+&lt;a name="rest_code_7f467dc80b4c47248f85ba80459c0523-3"&gt;&lt;/a&gt;    link/ether &lt;span class="m"&gt;02&lt;/span&gt;:74:c7:e1:de:64 brd ff:ff:ff:ff:ff:ff promiscuity &lt;span class="m"&gt;0&lt;/span&gt;
+&lt;a name="rest_code_7f467dc80b4c47248f85ba80459c0523-4"&gt;&lt;/a&gt;    vrf table &lt;span class="m"&gt;42&lt;/span&gt; addrgenmode eui64 numtxqueues &lt;span class="m"&gt;1&lt;/span&gt; numrxqueues &lt;span class="m"&gt;1&lt;/span&gt;
 &lt;/pre&gt;&lt;p&gt;Note the last line which states &lt;cite&gt;vrf table 42&lt;/cite&gt;.&lt;/p&gt;
 &lt;p&gt;To add an interface to the VRF you'll have to modify/create the corresponding .network file. This is how the file &lt;cite&gt;/etc/systemd/network/enp0s31f6.network&lt;/cite&gt; would look on my notebook:&lt;/p&gt;
 &lt;script src="https://gist.github.com/ee155492e3af2f83df39b0808fda5718.js"&gt;&lt;/script&gt;&lt;noscript&gt;&lt;pre class="literal-block"&gt;
@@ -28,68 +28,68 @@ VRF=vrf-customer1
 
 &lt;/pre&gt;
 &lt;/noscript&gt;&lt;p&gt;Restarting &lt;cite&gt;systemd-networkd&lt;/cite&gt; again and checking the status using &lt;cite&gt;ip -d link&lt;/cite&gt; gives us:&lt;/p&gt;
-&lt;pre class="code shell"&gt;&lt;a name="rest_code_bee2336da3344214820beca936074673-1"&gt;&lt;/a&gt;&lt;span class="nv"&gt;$ip&lt;/span&gt; -d link show  dev enp0s31f6
-&lt;a name="rest_code_bee2336da3344214820beca936074673-2"&gt;&lt;/a&gt;3: enp0s31f6: &amp;lt;NO-CARRIER,BROADCAST,MULTICAST,UP&amp;gt; mtu &lt;span class="m"&gt;1500&lt;/span&gt; qdisc fq_codel master vrf-customer1 state DOWN mode DEFAULT group default qlen 1000
-&lt;a name="rest_code_bee2336da3344214820beca936074673-3"&gt;&lt;/a&gt; link/ether 50:7b:9d:cf:34:dc brd ff:ff:ff:ff:ff:ff promiscuity 0
-&lt;a name="rest_code_bee2336da3344214820beca936074673-4"&gt;&lt;/a&gt; vrf_slave table &lt;span class="m"&gt;42&lt;/span&gt; addrgenmode eui64 numtxqueues &lt;span class="m"&gt;1&lt;/span&gt; numrxqueues 1
+&lt;pre class="code shell"&gt;&lt;a name="rest_code_e168d6bd19e44d0dae52058c0f74e8fb-1"&gt;&lt;/a&gt;&lt;span class="nv"&gt;$ip&lt;/span&gt; -d link show  dev enp0s31f6
+&lt;a name="rest_code_e168d6bd19e44d0dae52058c0f74e8fb-2"&gt;&lt;/a&gt;&lt;span class="m"&gt;3&lt;/span&gt;: enp0s31f6: &amp;lt;NO-CARRIER,BROADCAST,MULTICAST,UP&amp;gt; mtu &lt;span class="m"&gt;1500&lt;/span&gt; qdisc fq_codel master vrf-customer1 state DOWN mode DEFAULT group default qlen &lt;span class="m"&gt;1000&lt;/span&gt;
+&lt;a name="rest_code_e168d6bd19e44d0dae52058c0f74e8fb-3"&gt;&lt;/a&gt; link/ether &lt;span class="m"&gt;50&lt;/span&gt;:7b:9d:cf:34:dc brd ff:ff:ff:ff:ff:ff promiscuity &lt;span class="m"&gt;0&lt;/span&gt;
+&lt;a name="rest_code_e168d6bd19e44d0dae52058c0f74e8fb-4"&gt;&lt;/a&gt; vrf_slave table &lt;span class="m"&gt;42&lt;/span&gt; addrgenmode eui64 numtxqueues &lt;span class="m"&gt;1&lt;/span&gt; numrxqueues &lt;span class="m"&gt;1&lt;/span&gt;
 &lt;/pre&gt;&lt;p&gt;Again note the last line which states &lt;cite&gt;vrf_slave table 42&lt;/cite&gt;. Also in the first line you can see that it belongs to the VRF &lt;cite&gt;vrf-customer&lt;/cite&gt;.&lt;/p&gt;
 &lt;p&gt;And that is all for now. You still have to add the &lt;cite&gt;ip rule&lt;/cite&gt; commands in some way or another (there is no support in systemd-networkd yet and I did not have a good idea without inventing &lt;cite&gt;ip rule&lt;/cite&gt; management in systemd).&lt;/p&gt;&lt;/div&gt;</description><category>iproute2</category><category>linux</category><category>routing</category><category>systemd</category><category>vrf</category><guid>https://andir.github.io/posts/linux-ip-vrf-systemd-networkd/</guid><pubDate>Sun, 09 Oct 2016 13:00:00 GMT</pubDate></item><item><title>Using VRFs with linux</title><link>https://andir.github.io/posts/linux-ip-vrf/</link><dc:creator>Andreas Rammhold</dc:creator><description>&lt;div&gt;&lt;p&gt;Ever since I've heard about VRF support (or VRF-lite like it is called in Documentation/network/vrf.txt) I wanted to start tinkering with it.
 Since the topic is currently only covered in the previously mentioned linux kernel documentation I thought it would be a good idea to post some notes.&lt;/p&gt;
 &lt;p&gt;It basically boils down to adding an VRF interface and creating two &lt;cite&gt;ip rule&lt;/cite&gt;-entries.&lt;/p&gt;
 &lt;p&gt;I'm using a local VM with ArchLinux since the VRF feature seems to require a rather recent kernel. My experience with kernels below version 4.6 weren't that great.&lt;/p&gt;
-&lt;pre class="code shell"&gt;&lt;a name="rest_code_72ef79faf795451c866c70b0a43f7578-1"&gt;&lt;/a&gt;$ ip -br link &lt;span class="c1"&gt;# this is where we are start off&lt;/span&gt;
-&lt;a name="rest_code_72ef79faf795451c866c70b0a43f7578-2"&gt;&lt;/a&gt;lo               UNKNOWN        00:00:00:00:00:00 &amp;lt;LOOPBACK,UP,LOWER_UP&amp;gt;
-&lt;a name="rest_code_72ef79faf795451c866c70b0a43f7578-3"&gt;&lt;/a&gt;ens3             DOWN           52:54:00:12:34:56 &amp;lt;BROADCAST,MULTICAST&amp;gt;
+&lt;pre class="code shell"&gt;&lt;a name="rest_code_c58481ab2f804150b7937152d115dcfd-1"&gt;&lt;/a&gt;$ ip -br link &lt;span class="c1"&gt;# this is where we are start off&lt;/span&gt;
+&lt;a name="rest_code_c58481ab2f804150b7937152d115dcfd-2"&gt;&lt;/a&gt;lo               UNKNOWN        &lt;span class="m"&gt;00&lt;/span&gt;:00:00:00:00:00 &amp;lt;LOOPBACK,UP,LOWER_UP&amp;gt;
+&lt;a name="rest_code_c58481ab2f804150b7937152d115dcfd-3"&gt;&lt;/a&gt;ens3             DOWN           &lt;span class="m"&gt;52&lt;/span&gt;:54:00:12:34:56 &amp;lt;BROADCAST,MULTICAST&amp;gt;
 &lt;/pre&gt;&lt;p&gt;Now are adding a new interface named &lt;cite&gt;vrf-customer1&lt;/cite&gt; with the table &lt;cite&gt;customer1&lt;/cite&gt; assigned to it.
 The table parameter is used to place routes from your devices within the VRF into the right routing table&lt;/p&gt;
-&lt;pre class="code shell"&gt;&lt;a name="rest_code_e23557a6a2634526ba06307d87d1c41b-1"&gt;&lt;/a&gt;$ ip link add vrf-customer1 &lt;span class="nb"&gt;type&lt;/span&gt; vrf table customer1
-&lt;a name="rest_code_e23557a6a2634526ba06307d87d1c41b-2"&gt;&lt;/a&gt;
-&lt;a name="rest_code_e23557a6a2634526ba06307d87d1c41b-3"&gt;&lt;/a&gt;$ ip -d link show vrf-customer1 &lt;span class="c1"&gt;# verify that the interface indeed exists and has the correct table assigned to it&lt;/span&gt;
-&lt;a name="rest_code_e23557a6a2634526ba06307d87d1c41b-4"&gt;&lt;/a&gt;4: vrf-customer1: &amp;lt;NOARP,MASTER&amp;gt; mtu &lt;span class="m"&gt;1500&lt;/span&gt; qdisc noop state DOWN mode DEFAULT group default qlen 1000
-&lt;a name="rest_code_e23557a6a2634526ba06307d87d1c41b-5"&gt;&lt;/a&gt;    link/ether ca:22:59:ba:05:da brd ff:ff:ff:ff:ff:ff promiscuity 0
-&lt;a name="rest_code_e23557a6a2634526ba06307d87d1c41b-6"&gt;&lt;/a&gt;    vrf table &lt;span class="m"&gt;100&lt;/span&gt; addrgenmode eui64
+&lt;pre class="code shell"&gt;&lt;a name="rest_code_03a8f4b9c73e4ad0854057cbc90443d3-1"&gt;&lt;/a&gt;$ ip link add vrf-customer1 &lt;span class="nb"&gt;type&lt;/span&gt; vrf table customer1
+&lt;a name="rest_code_03a8f4b9c73e4ad0854057cbc90443d3-2"&gt;&lt;/a&gt;
+&lt;a name="rest_code_03a8f4b9c73e4ad0854057cbc90443d3-3"&gt;&lt;/a&gt;$ ip -d link show vrf-customer1 &lt;span class="c1"&gt;# verify that the interface indeed exists and has the correct table assigned to it&lt;/span&gt;
+&lt;a name="rest_code_03a8f4b9c73e4ad0854057cbc90443d3-4"&gt;&lt;/a&gt;&lt;span class="m"&gt;4&lt;/span&gt;: vrf-customer1: &amp;lt;NOARP,MASTER&amp;gt; mtu &lt;span class="m"&gt;1500&lt;/span&gt; qdisc noop state DOWN mode DEFAULT group default qlen &lt;span class="m"&gt;1000&lt;/span&gt;
+&lt;a name="rest_code_03a8f4b9c73e4ad0854057cbc90443d3-5"&gt;&lt;/a&gt;    link/ether ca:22:59:ba:05:da brd ff:ff:ff:ff:ff:ff promiscuity &lt;span class="m"&gt;0&lt;/span&gt;
+&lt;a name="rest_code_03a8f4b9c73e4ad0854057cbc90443d3-6"&gt;&lt;/a&gt;    vrf table &lt;span class="m"&gt;100&lt;/span&gt; addrgenmode eui64
 &lt;/pre&gt;&lt;p&gt;Next: redirect the traffic from and to the vrf to the customer1 table and verify the rules are indeed as expected:&lt;/p&gt;
-&lt;pre class="code shell"&gt;&lt;a name="rest_code_c734518ae29b45f78f9926ca726d29a7-1"&gt;&lt;/a&gt;$ ip -4 rule add oif vrf-customer1 lookup customer1
-&lt;a name="rest_code_c734518ae29b45f78f9926ca726d29a7-2"&gt;&lt;/a&gt;$ ip -4 rule add iif vrf-customer1 lookup customer1
-&lt;a name="rest_code_c734518ae29b45f78f9926ca726d29a7-3"&gt;&lt;/a&gt;$ ip -6 rule add oif vrf-customer1 lookup customer1
-&lt;a name="rest_code_c734518ae29b45f78f9926ca726d29a7-4"&gt;&lt;/a&gt;$ ip -6 rule add iif vrf-customer1 lookup customer1
-&lt;a name="rest_code_c734518ae29b45f78f9926ca726d29a7-5"&gt;&lt;/a&gt;
-&lt;a name="rest_code_c734518ae29b45f78f9926ca726d29a7-6"&gt;&lt;/a&gt;$ ip -4 rule
-&lt;a name="rest_code_c734518ae29b45f78f9926ca726d29a7-7"&gt;&lt;/a&gt;0:  from all lookup &lt;span class="nb"&gt;local&lt;/span&gt;
-&lt;a name="rest_code_c734518ae29b45f78f9926ca726d29a7-8"&gt;&lt;/a&gt;32764:      from all iif vrf-customer1 lookup customer1
-&lt;a name="rest_code_c734518ae29b45f78f9926ca726d29a7-9"&gt;&lt;/a&gt;32765:      from all oif vrf-customer1 lookup customer1
-&lt;a name="rest_code_c734518ae29b45f78f9926ca726d29a7-10"&gt;&lt;/a&gt;32766:      from all lookup main
-&lt;a name="rest_code_c734518ae29b45f78f9926ca726d29a7-11"&gt;&lt;/a&gt;32767:      from all lookup default
-&lt;a name="rest_code_c734518ae29b45f78f9926ca726d29a7-12"&gt;&lt;/a&gt;
-&lt;a name="rest_code_c734518ae29b45f78f9926ca726d29a7-13"&gt;&lt;/a&gt;$ ip -6 rule
-&lt;a name="rest_code_c734518ae29b45f78f9926ca726d29a7-14"&gt;&lt;/a&gt;0:  from all lookup &lt;span class="nb"&gt;local&lt;/span&gt;
-&lt;a name="rest_code_c734518ae29b45f78f9926ca726d29a7-15"&gt;&lt;/a&gt;32764:      from all oif vrf-customer1 lookup customer1
-&lt;a name="rest_code_c734518ae29b45f78f9926ca726d29a7-16"&gt;&lt;/a&gt;32765:      from all iif vrf-customer1 lookup customer1
-&lt;a name="rest_code_c734518ae29b45f78f9926ca726d29a7-17"&gt;&lt;/a&gt;32766:      from all lookup main
+&lt;pre class="code shell"&gt;&lt;a name="rest_code_3f726a3149a04d99b00dc7ac24c85b27-1"&gt;&lt;/a&gt;$ ip -4 rule add oif vrf-customer1 lookup customer1
+&lt;a name="rest_code_3f726a3149a04d99b00dc7ac24c85b27-2"&gt;&lt;/a&gt;$ ip -4 rule add iif vrf-customer1 lookup customer1
+&lt;a name="rest_code_3f726a3149a04d99b00dc7ac24c85b27-3"&gt;&lt;/a&gt;$ ip -6 rule add oif vrf-customer1 lookup customer1
+&lt;a name="rest_code_3f726a3149a04d99b00dc7ac24c85b27-4"&gt;&lt;/a&gt;$ ip -6 rule add iif vrf-customer1 lookup customer1
+&lt;a name="rest_code_3f726a3149a04d99b00dc7ac24c85b27-5"&gt;&lt;/a&gt;
+&lt;a name="rest_code_3f726a3149a04d99b00dc7ac24c85b27-6"&gt;&lt;/a&gt;$ ip -4 rule
+&lt;a name="rest_code_3f726a3149a04d99b00dc7ac24c85b27-7"&gt;&lt;/a&gt;&lt;span class="m"&gt;0&lt;/span&gt;:  from all lookup &lt;span class="nb"&gt;local&lt;/span&gt;
+&lt;a name="rest_code_3f726a3149a04d99b00dc7ac24c85b27-8"&gt;&lt;/a&gt;&lt;span class="m"&gt;32764&lt;/span&gt;:      from all iif vrf-customer1 lookup customer1
+&lt;a name="rest_code_3f726a3149a04d99b00dc7ac24c85b27-9"&gt;&lt;/a&gt;&lt;span class="m"&gt;32765&lt;/span&gt;:      from all oif vrf-customer1 lookup customer1
+&lt;a name="rest_code_3f726a3149a04d99b00dc7ac24c85b27-10"&gt;&lt;/a&gt;&lt;span class="m"&gt;32766&lt;/span&gt;:      from all lookup main
+&lt;a name="rest_code_3f726a3149a04d99b00dc7ac24c85b27-11"&gt;&lt;/a&gt;&lt;span class="m"&gt;32767&lt;/span&gt;:      from all lookup default
+&lt;a name="rest_code_3f726a3149a04d99b00dc7ac24c85b27-12"&gt;&lt;/a&gt;
+&lt;a name="rest_code_3f726a3149a04d99b00dc7ac24c85b27-13"&gt;&lt;/a&gt;$ ip -6 rule
+&lt;a name="rest_code_3f726a3149a04d99b00dc7ac24c85b27-14"&gt;&lt;/a&gt;&lt;span class="m"&gt;0&lt;/span&gt;:  from all lookup &lt;span class="nb"&gt;local&lt;/span&gt;
+&lt;a name="rest_code_3f726a3149a04d99b00dc7ac24c85b27-15"&gt;&lt;/a&gt;&lt;span class="m"&gt;32764&lt;/span&gt;:      from all oif vrf-customer1 lookup customer1
+&lt;a name="rest_code_3f726a3149a04d99b00dc7ac24c85b27-16"&gt;&lt;/a&gt;&lt;span class="m"&gt;32765&lt;/span&gt;:      from all iif vrf-customer1 lookup customer1
+&lt;a name="rest_code_3f726a3149a04d99b00dc7ac24c85b27-17"&gt;&lt;/a&gt;&lt;span class="m"&gt;32766&lt;/span&gt;:      from all lookup main
 &lt;/pre&gt;&lt;p&gt;To make any use of our VRF we will have to add an device to it. In my case I'll add the only available "physical" device &lt;cite&gt;ens3&lt;/cite&gt;.&lt;/p&gt;
-&lt;pre class="code shell"&gt;&lt;a name="rest_code_a6149ca2a8bb46219ecdcdcfad5f7df6-1"&gt;&lt;/a&gt;$ ip link &lt;span class="nb"&gt;set&lt;/span&gt; ens3 master vrf-customer1
-&lt;a name="rest_code_a6149ca2a8bb46219ecdcdcfad5f7df6-2"&gt;&lt;/a&gt;$ &lt;span class="c1"&gt;# verify the interface is indeed a member of the VRF&lt;/span&gt;
-&lt;a name="rest_code_a6149ca2a8bb46219ecdcdcfad5f7df6-3"&gt;&lt;/a&gt;$ ip -br link show master vrf-customer1
-&lt;a name="rest_code_a6149ca2a8bb46219ecdcdcfad5f7df6-4"&gt;&lt;/a&gt;ens3             DOWN           52:54:00:12:34:56 &amp;lt;BROADCAST,MULTICAST&amp;gt;
+&lt;pre class="code shell"&gt;&lt;a name="rest_code_189eca459b534c238de7bb52b4c05aff-1"&gt;&lt;/a&gt;$ ip link &lt;span class="nb"&gt;set&lt;/span&gt; ens3 master vrf-customer1
+&lt;a name="rest_code_189eca459b534c238de7bb52b4c05aff-2"&gt;&lt;/a&gt;$ &lt;span class="c1"&gt;# verify the interface is indeed a member of the VRF&lt;/span&gt;
+&lt;a name="rest_code_189eca459b534c238de7bb52b4c05aff-3"&gt;&lt;/a&gt;$ ip -br link show master vrf-customer1
+&lt;a name="rest_code_189eca459b534c238de7bb52b4c05aff-4"&gt;&lt;/a&gt;ens3             DOWN           &lt;span class="m"&gt;52&lt;/span&gt;:54:00:12:34:56 &amp;lt;BROADCAST,MULTICAST&amp;gt;
 &lt;/pre&gt;&lt;p&gt;Now that we've an interface to receive send send packets with it we should consider adding an IP-Address to it. Since IPv6 is enabled per default we don't need to configure a LL-Address for that protocol.&lt;/p&gt;
-&lt;pre class="code shell"&gt;&lt;a name="rest_code_c38ebdd07661452f9afef4e3221d2133-1"&gt;&lt;/a&gt;$ &lt;span class="c1"&gt;# add an IP to the interface&lt;/span&gt;
-&lt;a name="rest_code_c38ebdd07661452f9afef4e3221d2133-2"&gt;&lt;/a&gt;$ ip addr add 10.0.0.1/24 dev ens3
-&lt;a name="rest_code_c38ebdd07661452f9afef4e3221d2133-3"&gt;&lt;/a&gt;$ ip route show table customer1
-&lt;a name="rest_code_c38ebdd07661452f9afef4e3221d2133-4"&gt;&lt;/a&gt;&lt;span class="nb"&gt;local&lt;/span&gt; 10.0.0.1 dev ens3  proto kernel  scope host  src 10.0.0.1
+&lt;pre class="code shell"&gt;&lt;a name="rest_code_54d7c06d5c624933a14f6ca352b1bb88-1"&gt;&lt;/a&gt;$ &lt;span class="c1"&gt;# add an IP to the interface&lt;/span&gt;
+&lt;a name="rest_code_54d7c06d5c624933a14f6ca352b1bb88-2"&gt;&lt;/a&gt;$ ip addr add &lt;span class="m"&gt;10&lt;/span&gt;.0.0.1/24 dev ens3
+&lt;a name="rest_code_54d7c06d5c624933a14f6ca352b1bb88-3"&gt;&lt;/a&gt;$ ip route show table customer1
+&lt;a name="rest_code_54d7c06d5c624933a14f6ca352b1bb88-4"&gt;&lt;/a&gt;&lt;span class="nb"&gt;local&lt;/span&gt; &lt;span class="m"&gt;10&lt;/span&gt;.0.0.1 dev ens3  proto kernel  scope host  src &lt;span class="m"&gt;10&lt;/span&gt;.0.0.1
 &lt;/pre&gt;&lt;p&gt;Seeing a route like that might confuse the average linux user. Those routes usually exist within the local table which you can check via &lt;cite&gt;ip route show table local&lt;/cite&gt;&lt;/p&gt;
 &lt;p&gt;The route to the /24 we've added is still missing from the interface. Why is that?
 You'll have to change the state of the interface to "UP":&lt;/p&gt;
-&lt;pre class="code shell"&gt;&lt;a name="rest_code_30d79ad1fdbb4b4fad0855ca7caff2c8-1"&gt;&lt;/a&gt;$ ip link &lt;span class="nb"&gt;set&lt;/span&gt; ens3 up
-&lt;a name="rest_code_30d79ad1fdbb4b4fad0855ca7caff2c8-2"&gt;&lt;/a&gt;$ ip route show table customer1
-&lt;a name="rest_code_30d79ad1fdbb4b4fad0855ca7caff2c8-3"&gt;&lt;/a&gt;broadcast 10.0.0.0 dev ens3  proto kernel  scope link  src 10.0.0.1
-&lt;a name="rest_code_30d79ad1fdbb4b4fad0855ca7caff2c8-4"&gt;&lt;/a&gt;10.0.0.0/24 dev ens3  proto kernel  scope link  src 10.0.0.1
-&lt;a name="rest_code_30d79ad1fdbb4b4fad0855ca7caff2c8-5"&gt;&lt;/a&gt;&lt;span class="nb"&gt;local&lt;/span&gt; 10.0.0.1 dev ens3  proto kernel  scope host  src 10.0.0.1
-&lt;a name="rest_code_30d79ad1fdbb4b4fad0855ca7caff2c8-6"&gt;&lt;/a&gt;broadcast 10.0.0.255 dev ens3  proto kernel  scope link  src 10.0.0.1
-&lt;a name="rest_code_30d79ad1fdbb4b4fad0855ca7caff2c8-7"&gt;&lt;/a&gt;
-&lt;a name="rest_code_30d79ad1fdbb4b4fad0855ca7caff2c8-8"&gt;&lt;/a&gt;
-&lt;a name="rest_code_30d79ad1fdbb4b4fad0855ca7caff2c8-9"&gt;&lt;/a&gt;$ ip -6 route show table customer1
-&lt;a name="rest_code_30d79ad1fdbb4b4fad0855ca7caff2c8-10"&gt;&lt;/a&gt;&lt;span class="nb"&gt;local&lt;/span&gt; fe80::5054:ff:fe12:3456 dev lo  proto none  metric &lt;span class="m"&gt;0&lt;/span&gt;  pref medium
-&lt;a name="rest_code_30d79ad1fdbb4b4fad0855ca7caff2c8-11"&gt;&lt;/a&gt;fe80::/64 dev ens3  proto kernel  metric &lt;span class="m"&gt;256&lt;/span&gt;  pref medium
-&lt;a name="rest_code_30d79ad1fdbb4b4fad0855ca7caff2c8-12"&gt;&lt;/a&gt;ff00::/8 dev vrf-customer1  metric &lt;span class="m"&gt;256&lt;/span&gt;  pref medium
-&lt;a name="rest_code_30d79ad1fdbb4b4fad0855ca7caff2c8-13"&gt;&lt;/a&gt;ff00::/8 dev ens3  metric &lt;span class="m"&gt;256&lt;/span&gt;  pref medium
+&lt;pre class="code shell"&gt;&lt;a name="rest_code_763608e008b3408f97c911e333e3ad1a-1"&gt;&lt;/a&gt;$ ip link &lt;span class="nb"&gt;set&lt;/span&gt; ens3 up
+&lt;a name="rest_code_763608e008b3408f97c911e333e3ad1a-2"&gt;&lt;/a&gt;$ ip route show table customer1
+&lt;a name="rest_code_763608e008b3408f97c911e333e3ad1a-3"&gt;&lt;/a&gt;broadcast &lt;span class="m"&gt;10&lt;/span&gt;.0.0.0 dev ens3  proto kernel  scope link  src &lt;span class="m"&gt;10&lt;/span&gt;.0.0.1
+&lt;a name="rest_code_763608e008b3408f97c911e333e3ad1a-4"&gt;&lt;/a&gt;&lt;span class="m"&gt;10&lt;/span&gt;.0.0.0/24 dev ens3  proto kernel  scope link  src &lt;span class="m"&gt;10&lt;/span&gt;.0.0.1
+&lt;a name="rest_code_763608e008b3408f97c911e333e3ad1a-5"&gt;&lt;/a&gt;&lt;span class="nb"&gt;local&lt;/span&gt; &lt;span class="m"&gt;10&lt;/span&gt;.0.0.1 dev ens3  proto kernel  scope host  src &lt;span class="m"&gt;10&lt;/span&gt;.0.0.1
+&lt;a name="rest_code_763608e008b3408f97c911e333e3ad1a-6"&gt;&lt;/a&gt;broadcast &lt;span class="m"&gt;10&lt;/span&gt;.0.0.255 dev ens3  proto kernel  scope link  src &lt;span class="m"&gt;10&lt;/span&gt;.0.0.1
+&lt;a name="rest_code_763608e008b3408f97c911e333e3ad1a-7"&gt;&lt;/a&gt;
+&lt;a name="rest_code_763608e008b3408f97c911e333e3ad1a-8"&gt;&lt;/a&gt;
+&lt;a name="rest_code_763608e008b3408f97c911e333e3ad1a-9"&gt;&lt;/a&gt;$ ip -6 route show table customer1
+&lt;a name="rest_code_763608e008b3408f97c911e333e3ad1a-10"&gt;&lt;/a&gt;&lt;span class="nb"&gt;local&lt;/span&gt; fe80::5054:ff:fe12:3456 dev lo  proto none  metric &lt;span class="m"&gt;0&lt;/span&gt;  pref medium
+&lt;a name="rest_code_763608e008b3408f97c911e333e3ad1a-11"&gt;&lt;/a&gt;fe80::/64 dev ens3  proto kernel  metric &lt;span class="m"&gt;256&lt;/span&gt;  pref medium
+&lt;a name="rest_code_763608e008b3408f97c911e333e3ad1a-12"&gt;&lt;/a&gt;ff00::/8 dev vrf-customer1  metric &lt;span class="m"&gt;256&lt;/span&gt;  pref medium
+&lt;a name="rest_code_763608e008b3408f97c911e333e3ad1a-13"&gt;&lt;/a&gt;ff00::/8 dev ens3  metric &lt;span class="m"&gt;256&lt;/span&gt;  pref medium
 &lt;/pre&gt;&lt;p&gt;suddenly routes \o/&lt;/p&gt;&lt;/div&gt;</description><category>iproute2</category><category>linux</category><category>routing</category><category>vrf</category><guid>https://andir.github.io/posts/linux-ip-vrf/</guid><pubDate>Tue, 14 Jun 2016 17:00:00 GMT</pubDate></item></channel></rss>

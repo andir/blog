@@ -2,7 +2,6 @@
 <html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="en">
 <head>
 <meta charset="utf-8">
-<base href="https://andir.github.io/posts/linux-ip-vrf/">
 <meta name="description" content="Using vrf interfaces to seperate routing on a linux server">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Using VRFs with linux | Weird random notes</title>
@@ -11,11 +10,11 @@
 <link href="../../assets/css/code.css" rel="stylesheet" type="text/css">
 <link href="../../assets/css/colorbox.css" rel="stylesheet" type="text/css">
 <link href="../../assets/css/theme.css" rel="stylesheet" type="text/css">
-<meta content="#5670d4" name="theme-color">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../../rss.xml">
 <link rel="canonical" href="https://andir.github.io/posts/linux-ip-vrf/">
-<!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="description" itemprop="description" content="Using vrf interfaces to seperate routing on a linux server">
-<meta name="author" content="Andreas Rammhold">
+<!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="author" content="Andreas Rammhold">
 <link rel="prev" href="../isc-dhcpd-multiple-classes/" title="Using multiple client classes with ISC DHCPd" type="text/html">
 <link rel="next" href="../linux-ip-vrf-systemd-networkd/" title="Using VRFs with linux and systemd-networkd" type="text/html">
 <meta property="og:site_name" content="Weird random notes">
@@ -83,7 +82,7 @@
 <article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">Using VRFs with linux</a></h1>
 
         <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                     Andreas Rammhold
             </span></p>
             <p class="dateline"><a href="." rel="bookmark"><time class="published dt-published" datetime="2016-06-14T17:00:00Z" itemprop="datePublished" title="2016-06-14 17:00">2016-06-14 17:00</time></a></p>
@@ -96,8 +95,7 @@
         </p>
 <p class="sourceline"><a href="index.rst" id="sourcelink">Source</a></p>
 
-                <meta name="description" itemprop="description" content="Using vrf interfaces to seperate routing on a linux server">
-</div>
+        </div>
         
 
     </header><div class="e-content entry-content" itemprop="articleBody text">
@@ -106,66 +104,66 @@
 Since the topic is currently only covered in the previously mentioned linux kernel documentation I thought it would be a good idea to post some notes.</p>
 <p>It basically boils down to adding an VRF interface and creating two <cite>ip rule</cite>-entries.</p>
 <p>I'm using a local VM with ArchLinux since the VRF feature seems to require a rather recent kernel. My experience with kernels below version 4.6 weren't that great.</p>
-<pre class="code shell"><a name="rest_code_72ef79faf795451c866c70b0a43f7578-1"></a>$ ip -br link <span class="c1"># this is where we are start off</span>
-<a name="rest_code_72ef79faf795451c866c70b0a43f7578-2"></a>lo               UNKNOWN        00:00:00:00:00:00 &lt;LOOPBACK,UP,LOWER_UP&gt;
-<a name="rest_code_72ef79faf795451c866c70b0a43f7578-3"></a>ens3             DOWN           52:54:00:12:34:56 &lt;BROADCAST,MULTICAST&gt;
+<pre class="code shell"><a name="rest_code_c58481ab2f804150b7937152d115dcfd-1"></a>$ ip -br link <span class="c1"># this is where we are start off</span>
+<a name="rest_code_c58481ab2f804150b7937152d115dcfd-2"></a>lo               UNKNOWN        <span class="m">00</span>:00:00:00:00:00 &lt;LOOPBACK,UP,LOWER_UP&gt;
+<a name="rest_code_c58481ab2f804150b7937152d115dcfd-3"></a>ens3             DOWN           <span class="m">52</span>:54:00:12:34:56 &lt;BROADCAST,MULTICAST&gt;
 </pre>
 <p>Now are adding a new interface named <cite>vrf-customer1</cite> with the table <cite>customer1</cite> assigned to it.
 The table parameter is used to place routes from your devices within the VRF into the right routing table</p>
-<pre class="code shell"><a name="rest_code_e23557a6a2634526ba06307d87d1c41b-1"></a>$ ip link add vrf-customer1 <span class="nb">type</span> vrf table customer1
-<a name="rest_code_e23557a6a2634526ba06307d87d1c41b-2"></a>
-<a name="rest_code_e23557a6a2634526ba06307d87d1c41b-3"></a>$ ip -d link show vrf-customer1 <span class="c1"># verify that the interface indeed exists and has the correct table assigned to it</span>
-<a name="rest_code_e23557a6a2634526ba06307d87d1c41b-4"></a>4: vrf-customer1: &lt;NOARP,MASTER&gt; mtu <span class="m">1500</span> qdisc noop state DOWN mode DEFAULT group default qlen 1000
-<a name="rest_code_e23557a6a2634526ba06307d87d1c41b-5"></a>    link/ether ca:22:59:ba:05:da brd ff:ff:ff:ff:ff:ff promiscuity 0
-<a name="rest_code_e23557a6a2634526ba06307d87d1c41b-6"></a>    vrf table <span class="m">100</span> addrgenmode eui64
+<pre class="code shell"><a name="rest_code_03a8f4b9c73e4ad0854057cbc90443d3-1"></a>$ ip link add vrf-customer1 <span class="nb">type</span> vrf table customer1
+<a name="rest_code_03a8f4b9c73e4ad0854057cbc90443d3-2"></a>
+<a name="rest_code_03a8f4b9c73e4ad0854057cbc90443d3-3"></a>$ ip -d link show vrf-customer1 <span class="c1"># verify that the interface indeed exists and has the correct table assigned to it</span>
+<a name="rest_code_03a8f4b9c73e4ad0854057cbc90443d3-4"></a><span class="m">4</span>: vrf-customer1: &lt;NOARP,MASTER&gt; mtu <span class="m">1500</span> qdisc noop state DOWN mode DEFAULT group default qlen <span class="m">1000</span>
+<a name="rest_code_03a8f4b9c73e4ad0854057cbc90443d3-5"></a>    link/ether ca:22:59:ba:05:da brd ff:ff:ff:ff:ff:ff promiscuity <span class="m">0</span>
+<a name="rest_code_03a8f4b9c73e4ad0854057cbc90443d3-6"></a>    vrf table <span class="m">100</span> addrgenmode eui64
 </pre>
 <p>Next: redirect the traffic from and to the vrf to the customer1 table and verify the rules are indeed as expected:</p>
-<pre class="code shell"><a name="rest_code_c734518ae29b45f78f9926ca726d29a7-1"></a>$ ip -4 rule add oif vrf-customer1 lookup customer1
-<a name="rest_code_c734518ae29b45f78f9926ca726d29a7-2"></a>$ ip -4 rule add iif vrf-customer1 lookup customer1
-<a name="rest_code_c734518ae29b45f78f9926ca726d29a7-3"></a>$ ip -6 rule add oif vrf-customer1 lookup customer1
-<a name="rest_code_c734518ae29b45f78f9926ca726d29a7-4"></a>$ ip -6 rule add iif vrf-customer1 lookup customer1
-<a name="rest_code_c734518ae29b45f78f9926ca726d29a7-5"></a>
-<a name="rest_code_c734518ae29b45f78f9926ca726d29a7-6"></a>$ ip -4 rule
-<a name="rest_code_c734518ae29b45f78f9926ca726d29a7-7"></a>0:  from all lookup <span class="nb">local</span>
-<a name="rest_code_c734518ae29b45f78f9926ca726d29a7-8"></a>32764:      from all iif vrf-customer1 lookup customer1
-<a name="rest_code_c734518ae29b45f78f9926ca726d29a7-9"></a>32765:      from all oif vrf-customer1 lookup customer1
-<a name="rest_code_c734518ae29b45f78f9926ca726d29a7-10"></a>32766:      from all lookup main
-<a name="rest_code_c734518ae29b45f78f9926ca726d29a7-11"></a>32767:      from all lookup default
-<a name="rest_code_c734518ae29b45f78f9926ca726d29a7-12"></a>
-<a name="rest_code_c734518ae29b45f78f9926ca726d29a7-13"></a>$ ip -6 rule
-<a name="rest_code_c734518ae29b45f78f9926ca726d29a7-14"></a>0:  from all lookup <span class="nb">local</span>
-<a name="rest_code_c734518ae29b45f78f9926ca726d29a7-15"></a>32764:      from all oif vrf-customer1 lookup customer1
-<a name="rest_code_c734518ae29b45f78f9926ca726d29a7-16"></a>32765:      from all iif vrf-customer1 lookup customer1
-<a name="rest_code_c734518ae29b45f78f9926ca726d29a7-17"></a>32766:      from all lookup main
+<pre class="code shell"><a name="rest_code_3f726a3149a04d99b00dc7ac24c85b27-1"></a>$ ip -4 rule add oif vrf-customer1 lookup customer1
+<a name="rest_code_3f726a3149a04d99b00dc7ac24c85b27-2"></a>$ ip -4 rule add iif vrf-customer1 lookup customer1
+<a name="rest_code_3f726a3149a04d99b00dc7ac24c85b27-3"></a>$ ip -6 rule add oif vrf-customer1 lookup customer1
+<a name="rest_code_3f726a3149a04d99b00dc7ac24c85b27-4"></a>$ ip -6 rule add iif vrf-customer1 lookup customer1
+<a name="rest_code_3f726a3149a04d99b00dc7ac24c85b27-5"></a>
+<a name="rest_code_3f726a3149a04d99b00dc7ac24c85b27-6"></a>$ ip -4 rule
+<a name="rest_code_3f726a3149a04d99b00dc7ac24c85b27-7"></a><span class="m">0</span>:  from all lookup <span class="nb">local</span>
+<a name="rest_code_3f726a3149a04d99b00dc7ac24c85b27-8"></a><span class="m">32764</span>:      from all iif vrf-customer1 lookup customer1
+<a name="rest_code_3f726a3149a04d99b00dc7ac24c85b27-9"></a><span class="m">32765</span>:      from all oif vrf-customer1 lookup customer1
+<a name="rest_code_3f726a3149a04d99b00dc7ac24c85b27-10"></a><span class="m">32766</span>:      from all lookup main
+<a name="rest_code_3f726a3149a04d99b00dc7ac24c85b27-11"></a><span class="m">32767</span>:      from all lookup default
+<a name="rest_code_3f726a3149a04d99b00dc7ac24c85b27-12"></a>
+<a name="rest_code_3f726a3149a04d99b00dc7ac24c85b27-13"></a>$ ip -6 rule
+<a name="rest_code_3f726a3149a04d99b00dc7ac24c85b27-14"></a><span class="m">0</span>:  from all lookup <span class="nb">local</span>
+<a name="rest_code_3f726a3149a04d99b00dc7ac24c85b27-15"></a><span class="m">32764</span>:      from all oif vrf-customer1 lookup customer1
+<a name="rest_code_3f726a3149a04d99b00dc7ac24c85b27-16"></a><span class="m">32765</span>:      from all iif vrf-customer1 lookup customer1
+<a name="rest_code_3f726a3149a04d99b00dc7ac24c85b27-17"></a><span class="m">32766</span>:      from all lookup main
 </pre>
 <p>To make any use of our VRF we will have to add an device to it. In my case I'll add the only available "physical" device <cite>ens3</cite>.</p>
-<pre class="code shell"><a name="rest_code_a6149ca2a8bb46219ecdcdcfad5f7df6-1"></a>$ ip link <span class="nb">set</span> ens3 master vrf-customer1
-<a name="rest_code_a6149ca2a8bb46219ecdcdcfad5f7df6-2"></a>$ <span class="c1"># verify the interface is indeed a member of the VRF</span>
-<a name="rest_code_a6149ca2a8bb46219ecdcdcfad5f7df6-3"></a>$ ip -br link show master vrf-customer1
-<a name="rest_code_a6149ca2a8bb46219ecdcdcfad5f7df6-4"></a>ens3             DOWN           52:54:00:12:34:56 &lt;BROADCAST,MULTICAST&gt;
+<pre class="code shell"><a name="rest_code_189eca459b534c238de7bb52b4c05aff-1"></a>$ ip link <span class="nb">set</span> ens3 master vrf-customer1
+<a name="rest_code_189eca459b534c238de7bb52b4c05aff-2"></a>$ <span class="c1"># verify the interface is indeed a member of the VRF</span>
+<a name="rest_code_189eca459b534c238de7bb52b4c05aff-3"></a>$ ip -br link show master vrf-customer1
+<a name="rest_code_189eca459b534c238de7bb52b4c05aff-4"></a>ens3             DOWN           <span class="m">52</span>:54:00:12:34:56 &lt;BROADCAST,MULTICAST&gt;
 </pre>
 <p>Now that we've an interface to receive send send packets with it we should consider adding an IP-Address to it. Since IPv6 is enabled per default we don't need to configure a LL-Address for that protocol.</p>
-<pre class="code shell"><a name="rest_code_c38ebdd07661452f9afef4e3221d2133-1"></a>$ <span class="c1"># add an IP to the interface</span>
-<a name="rest_code_c38ebdd07661452f9afef4e3221d2133-2"></a>$ ip addr add 10.0.0.1/24 dev ens3
-<a name="rest_code_c38ebdd07661452f9afef4e3221d2133-3"></a>$ ip route show table customer1
-<a name="rest_code_c38ebdd07661452f9afef4e3221d2133-4"></a><span class="nb">local</span> 10.0.0.1 dev ens3  proto kernel  scope host  src 10.0.0.1
+<pre class="code shell"><a name="rest_code_54d7c06d5c624933a14f6ca352b1bb88-1"></a>$ <span class="c1"># add an IP to the interface</span>
+<a name="rest_code_54d7c06d5c624933a14f6ca352b1bb88-2"></a>$ ip addr add <span class="m">10</span>.0.0.1/24 dev ens3
+<a name="rest_code_54d7c06d5c624933a14f6ca352b1bb88-3"></a>$ ip route show table customer1
+<a name="rest_code_54d7c06d5c624933a14f6ca352b1bb88-4"></a><span class="nb">local</span> <span class="m">10</span>.0.0.1 dev ens3  proto kernel  scope host  src <span class="m">10</span>.0.0.1
 </pre>
 <p>Seeing a route like that might confuse the average linux user. Those routes usually exist within the local table which you can check via <cite>ip route show table local</cite></p>
 <p>The route to the /24 we've added is still missing from the interface. Why is that?
 You'll have to change the state of the interface to "UP":</p>
-<pre class="code shell"><a name="rest_code_30d79ad1fdbb4b4fad0855ca7caff2c8-1"></a>$ ip link <span class="nb">set</span> ens3 up
-<a name="rest_code_30d79ad1fdbb4b4fad0855ca7caff2c8-2"></a>$ ip route show table customer1
-<a name="rest_code_30d79ad1fdbb4b4fad0855ca7caff2c8-3"></a>broadcast 10.0.0.0 dev ens3  proto kernel  scope link  src 10.0.0.1
-<a name="rest_code_30d79ad1fdbb4b4fad0855ca7caff2c8-4"></a>10.0.0.0/24 dev ens3  proto kernel  scope link  src 10.0.0.1
-<a name="rest_code_30d79ad1fdbb4b4fad0855ca7caff2c8-5"></a><span class="nb">local</span> 10.0.0.1 dev ens3  proto kernel  scope host  src 10.0.0.1
-<a name="rest_code_30d79ad1fdbb4b4fad0855ca7caff2c8-6"></a>broadcast 10.0.0.255 dev ens3  proto kernel  scope link  src 10.0.0.1
-<a name="rest_code_30d79ad1fdbb4b4fad0855ca7caff2c8-7"></a>
-<a name="rest_code_30d79ad1fdbb4b4fad0855ca7caff2c8-8"></a>
-<a name="rest_code_30d79ad1fdbb4b4fad0855ca7caff2c8-9"></a>$ ip -6 route show table customer1
-<a name="rest_code_30d79ad1fdbb4b4fad0855ca7caff2c8-10"></a><span class="nb">local</span> fe80::5054:ff:fe12:3456 dev lo  proto none  metric <span class="m">0</span>  pref medium
-<a name="rest_code_30d79ad1fdbb4b4fad0855ca7caff2c8-11"></a>fe80::/64 dev ens3  proto kernel  metric <span class="m">256</span>  pref medium
-<a name="rest_code_30d79ad1fdbb4b4fad0855ca7caff2c8-12"></a>ff00::/8 dev vrf-customer1  metric <span class="m">256</span>  pref medium
-<a name="rest_code_30d79ad1fdbb4b4fad0855ca7caff2c8-13"></a>ff00::/8 dev ens3  metric <span class="m">256</span>  pref medium
+<pre class="code shell"><a name="rest_code_763608e008b3408f97c911e333e3ad1a-1"></a>$ ip link <span class="nb">set</span> ens3 up
+<a name="rest_code_763608e008b3408f97c911e333e3ad1a-2"></a>$ ip route show table customer1
+<a name="rest_code_763608e008b3408f97c911e333e3ad1a-3"></a>broadcast <span class="m">10</span>.0.0.0 dev ens3  proto kernel  scope link  src <span class="m">10</span>.0.0.1
+<a name="rest_code_763608e008b3408f97c911e333e3ad1a-4"></a><span class="m">10</span>.0.0.0/24 dev ens3  proto kernel  scope link  src <span class="m">10</span>.0.0.1
+<a name="rest_code_763608e008b3408f97c911e333e3ad1a-5"></a><span class="nb">local</span> <span class="m">10</span>.0.0.1 dev ens3  proto kernel  scope host  src <span class="m">10</span>.0.0.1
+<a name="rest_code_763608e008b3408f97c911e333e3ad1a-6"></a>broadcast <span class="m">10</span>.0.0.255 dev ens3  proto kernel  scope link  src <span class="m">10</span>.0.0.1
+<a name="rest_code_763608e008b3408f97c911e333e3ad1a-7"></a>
+<a name="rest_code_763608e008b3408f97c911e333e3ad1a-8"></a>
+<a name="rest_code_763608e008b3408f97c911e333e3ad1a-9"></a>$ ip -6 route show table customer1
+<a name="rest_code_763608e008b3408f97c911e333e3ad1a-10"></a><span class="nb">local</span> fe80::5054:ff:fe12:3456 dev lo  proto none  metric <span class="m">0</span>  pref medium
+<a name="rest_code_763608e008b3408f97c911e333e3ad1a-11"></a>fe80::/64 dev ens3  proto kernel  metric <span class="m">256</span>  pref medium
+<a name="rest_code_763608e008b3408f97c911e333e3ad1a-12"></a>ff00::/8 dev vrf-customer1  metric <span class="m">256</span>  pref medium
+<a name="rest_code_763608e008b3408f97c911e333e3ad1a-13"></a>ff00::/8 dev ens3  metric <span class="m">256</span>  pref medium
 </pre>
 <p>suddenly routes \o/</p>
 </div>
@@ -210,7 +208,7 @@ You'll have to change the state of the interface to "UP":</p>
         <!--End of body content-->
 
         <footer id="footer">
-            Contents © 2016         <a href="mailto:andreas@rammhold.de">Andreas Rammhold</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            Contents © 2017         <a href="mailto:andreas@rammhold.de">Andreas Rammhold</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
             
         </footer>
 </div>

@@ -2,7 +2,6 @@
 <html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="en">
 <head>
 <meta charset="utf-8">
-<base href="https://andir.github.io/posts/postgresql-tmpfs-with-sytemdsocket-activation-for-local-ephemeral-data-during-development/">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Postgresql-tmpfs with systemd.socket-activation for local (ephemeral) data during development | Weird random notes</title>
 <link href="../../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
@@ -10,7 +9,8 @@
 <link href="../../assets/css/code.css" rel="stylesheet" type="text/css">
 <link href="../../assets/css/colorbox.css" rel="stylesheet" type="text/css">
 <link href="../../assets/css/theme.css" rel="stylesheet" type="text/css">
-<meta content="#5670d4" name="theme-color">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../../rss.xml">
 <link rel="canonical" href="https://andir.github.io/posts/postgresql-tmpfs-with-sytemdsocket-activation-for-local-ephemeral-data-during-development/">
 <!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="author" content="Andreas Rammhold">
@@ -81,7 +81,7 @@ In my case I have to ru'>
 <article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">Postgresql-tmpfs with systemd.socket-activation for local (ephemeral) data during development</a></h1>
 
         <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                     Andreas Rammhold
             </span></p>
             <p class="dateline"><a href="." rel="bookmark"><time class="published dt-published" datetime="2016-04-22T09:50:09Z" itemprop="datePublished" title="2016-04-22 09:50">2016-04-22 09:50</time></a></p>
@@ -115,8 +115,8 @@ ExecStop=/usr/bin/docker stop psql-tmpfs
 </pre>
 </noscript>
 <p>You can either put those unit files in <cite>/etc/systemd/system</cite> or install them as systemd-user units in <cite>~/.config/systemd/user</cite>.</p>
-<pre class="code bash"><a name="rest_code_d33d0d3477a046f7b0fe8ab28ebd8e6a-1"></a>systemctl daemon-reload
-<a name="rest_code_d33d0d3477a046f7b0fe8ab28ebd8e6a-2"></a>systemctl <span class="nb">enable</span> postgresql-docker.socket
+<pre class="code bash"><a name="rest_code_ab0f83cec1b54498b9a461aa87b311ec-1"></a>systemctl daemon-reload
+<a name="rest_code_ab0f83cec1b54498b9a461aa87b311ec-2"></a>systemctl <span class="nb">enable</span> postgresql-docker.socket
 </pre>
 <p>If you try to connect to the postgresql server (<code>nc 127.0.0.1 5432</code>) you can observe the container while it is starting (<code>journalctl -f</code>).</p>
 <p>The default username, password and database name is <cite>postgres</cite>. You can change that by modifying the startup arguments of the docker container. Those are documented at <a class="reference external" href="https://hub.docker.com/_/postgres/">https://hub.docker.com/_/postgres/</a>.</p>
@@ -161,7 +161,7 @@ ExecStop=/usr/bin/docker stop psql-tmpfs
         <!--End of body content-->
 
         <footer id="footer">
-            Contents © 2016         <a href="mailto:andreas@rammhold.de">Andreas Rammhold</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            Contents © 2017         <a href="mailto:andreas@rammhold.de">Andreas Rammhold</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
             
         </footer>
 </div>

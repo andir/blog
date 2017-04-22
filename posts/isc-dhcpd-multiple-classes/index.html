@@ -2,7 +2,6 @@
 <html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="en">
 <head>
 <meta charset="utf-8">
-<base href="https://andir.github.io/posts/isc-dhcpd-multiple-classes/">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Using multiple client classes with ISC DHCPd | Weird random notes</title>
 <link href="../../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
@@ -10,7 +9,8 @@
 <link href="../../assets/css/code.css" rel="stylesheet" type="text/css">
 <link href="../../assets/css/colorbox.css" rel="stylesheet" type="text/css">
 <link href="../../assets/css/theme.css" rel="stylesheet" type="text/css">
-<meta content="#5670d4" name="theme-color">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../../rss.xml">
 <link rel="canonical" href="https://andir.github.io/posts/isc-dhcpd-multiple-classes/">
 <!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="author" content="Andreas Rammhold">
@@ -83,7 +83,7 @@ class "mac-filtered-clients"
 <article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">Using multiple client classes with ISC DHCPd</a></h1>
 
         <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                     Andreas Rammhold
             </span></p>
             <p class="dateline"><a href="." rel="bookmark"><time class="published dt-published" datetime="2016-05-23T11:00:00Z" itemprop="datePublished" title="2016-05-23 11:00">2016-05-23 11:00</time></a></p>
@@ -102,26 +102,26 @@ class "mac-filtered-clients"
     </header><div class="e-content entry-content" itemprop="articleBody text">
     <div>
 <p>Since the internet is lacking examples of how to use multiple classes with a single pool here is one:</p>
-<pre class="code nginx"><a name="rest_code_df91df1c98284d36b43d09807e902fff-1"></a><span class="k">class</span> <span class="s">"mac-filtered-clients"</span>
-<a name="rest_code_df91df1c98284d36b43d09807e902fff-2"></a><span class="p">{</span>
-<a name="rest_code_df91df1c98284d36b43d09807e902fff-3"></a>    <span class="kn">match</span> <span class="s">binary-to-ascii</span> <span class="s">(16,</span> <span class="mi">8</span><span class="s">,</span> <span class="s">":",</span> <span class="s">substring(hardware,</span> <span class="mi">1</span><span class="s">,</span> <span class="mi">6</span><span class="s">))</span><span class="p">;</span>
-<a name="rest_code_df91df1c98284d36b43d09807e902fff-4"></a><span class="p">}</span>
-<a name="rest_code_df91df1c98284d36b43d09807e902fff-5"></a>
-<a name="rest_code_df91df1c98284d36b43d09807e902fff-6"></a><span class="k">subclass</span> <span class="s">"mac-filtered-clients"</span> <span class="s">"50:7b:00:00:00:00"</span><span class="p">;</span> <span class="c1"># some cool host!</span>
-<a name="rest_code_df91df1c98284d36b43d09807e902fff-7"></a>
-<a name="rest_code_df91df1c98284d36b43d09807e902fff-8"></a><span class="k">class</span> <span class="s">"J-client"</span> <span class="p">{</span>
-<a name="rest_code_df91df1c98284d36b43d09807e902fff-9"></a>    <span class="kn">spawn</span> <span class="s">with</span> <span class="s">option</span> <span class="s">agent.circuit-id</span><span class="p">;</span>
-<a name="rest_code_df91df1c98284d36b43d09807e902fff-10"></a>    <span class="kn">match</span> <span class="s">if</span> <span class="s">(substring(option</span> <span class="s">agent.circuit-id,</span> <span class="mi">30</span><span class="s">,</span> <span class="mi">9</span><span class="s">)</span> <span class="p">=</span> <span class="s">"foo-bar")</span><span class="p">;</span>
-<a name="rest_code_df91df1c98284d36b43d09807e902fff-11"></a>    <span class="kn">lease</span> <span class="s">limit</span> <span class="mi">1</span><span class="p">;</span>
-<a name="rest_code_df91df1c98284d36b43d09807e902fff-12"></a><span class="p">}</span>
-<a name="rest_code_df91df1c98284d36b43d09807e902fff-13"></a>
-<a name="rest_code_df91df1c98284d36b43d09807e902fff-14"></a><span class="k">subnet</span> <span class="mi">192</span><span class="s">.168.0.0</span> <span class="mi">255</span><span class="s">.255.0.0</span> <span class="p">{</span>
-<a name="rest_code_df91df1c98284d36b43d09807e902fff-15"></a>     <span class="kn">pool</span> <span class="p">{</span>
-<a name="rest_code_df91df1c98284d36b43d09807e902fff-16"></a>          <span class="kn">range</span> <span class="mi">192</span><span class="s">.168.0.10</span> <span class="mi">192</span><span class="s">.168.0.150</span><span class="p">;</span>
-<a name="rest_code_df91df1c98284d36b43d09807e902fff-17"></a>          <span class="kn">allow</span> <span class="s">members</span> <span class="s">of</span> <span class="s">"J-client"</span><span class="p">;</span>
-<a name="rest_code_df91df1c98284d36b43d09807e902fff-18"></a>          <span class="kn">allow</span> <span class="s">members</span> <span class="s">of</span> <span class="s">"mac-filtered-clients"</span><span class="p">;</span>
-<a name="rest_code_df91df1c98284d36b43d09807e902fff-19"></a>     <span class="p">}</span>
-<a name="rest_code_df91df1c98284d36b43d09807e902fff-20"></a><span class="p">}</span>
+<pre class="code nginx"><a name="rest_code_be5adfe0dd1f4a1a99142f8407b81199-1"></a><span class="k">class</span> <span class="s">"mac-filtered-clients"</span>
+<a name="rest_code_be5adfe0dd1f4a1a99142f8407b81199-2"></a><span class="p">{</span>
+<a name="rest_code_be5adfe0dd1f4a1a99142f8407b81199-3"></a>    <span class="kn">match</span> <span class="s">binary-to-ascii</span> <span class="s">(16,</span> <span class="mi">8</span><span class="s">,</span> <span class="s">":",</span> <span class="s">substring(hardware,</span> <span class="mi">1</span><span class="s">,</span> <span class="mi">6</span><span class="s">))</span><span class="p">;</span>
+<a name="rest_code_be5adfe0dd1f4a1a99142f8407b81199-4"></a><span class="p">}</span>
+<a name="rest_code_be5adfe0dd1f4a1a99142f8407b81199-5"></a>
+<a name="rest_code_be5adfe0dd1f4a1a99142f8407b81199-6"></a><span class="k">subclass</span> <span class="s">"mac-filtered-clients"</span> <span class="s">"50:7b:00:00:00:00"</span><span class="p">;</span> <span class="c1"># some cool host!</span>
+<a name="rest_code_be5adfe0dd1f4a1a99142f8407b81199-7"></a>
+<a name="rest_code_be5adfe0dd1f4a1a99142f8407b81199-8"></a><span class="k">class</span> <span class="s">"J-client"</span> <span class="p">{</span>
+<a name="rest_code_be5adfe0dd1f4a1a99142f8407b81199-9"></a>    <span class="kn">spawn</span> <span class="s">with</span> <span class="s">option</span> <span class="s">agent.circuit-id</span><span class="p">;</span>
+<a name="rest_code_be5adfe0dd1f4a1a99142f8407b81199-10"></a>    <span class="kn">match</span> <span class="s">if</span> <span class="s">(substring(option</span> <span class="s">agent.circuit-id,</span> <span class="mi">30</span><span class="s">,</span> <span class="mi">9</span><span class="s">)</span> <span class="p">=</span> <span class="s">"foo-bar")</span><span class="p">;</span>
+<a name="rest_code_be5adfe0dd1f4a1a99142f8407b81199-11"></a>    <span class="kn">lease</span> <span class="s">limit</span> <span class="mi">1</span><span class="p">;</span>
+<a name="rest_code_be5adfe0dd1f4a1a99142f8407b81199-12"></a><span class="p">}</span>
+<a name="rest_code_be5adfe0dd1f4a1a99142f8407b81199-13"></a>
+<a name="rest_code_be5adfe0dd1f4a1a99142f8407b81199-14"></a><span class="k">subnet</span> <span class="mi">192</span><span class="s">.168.0.0</span> <span class="mi">255</span><span class="s">.255.0.0</span> <span class="p">{</span>
+<a name="rest_code_be5adfe0dd1f4a1a99142f8407b81199-15"></a>     <span class="kn">pool</span> <span class="p">{</span>
+<a name="rest_code_be5adfe0dd1f4a1a99142f8407b81199-16"></a>          <span class="kn">range</span> <span class="mi">192</span><span class="s">.168.0.10</span> <span class="mi">192</span><span class="s">.168.0.150</span><span class="p">;</span>
+<a name="rest_code_be5adfe0dd1f4a1a99142f8407b81199-17"></a>          <span class="kn">allow</span> <span class="s">members</span> <span class="s">of</span> <span class="s">"J-client"</span><span class="p">;</span>
+<a name="rest_code_be5adfe0dd1f4a1a99142f8407b81199-18"></a>          <span class="kn">allow</span> <span class="s">members</span> <span class="s">of</span> <span class="s">"mac-filtered-clients"</span><span class="p">;</span>
+<a name="rest_code_be5adfe0dd1f4a1a99142f8407b81199-19"></a>     <span class="p">}</span>
+<a name="rest_code_be5adfe0dd1f4a1a99142f8407b81199-20"></a><span class="p">}</span>
 </pre>
 <p>This isn't very special compared to a setup with just a single class but it can be confusing since debugging classes is a pita.. One pitfall I did run into was using the byte representation of the mac-addresses (without the quotes) and using <code>match hardware;</code>. The example above works for me (tm).</p>
 </div>
@@ -164,7 +164,7 @@ class "mac-filtered-clients"
         <!--End of body content-->
 
         <footer id="footer">
-            Contents © 2016         <a href="mailto:andreas@rammhold.de">Andreas Rammhold</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            Contents © 2017         <a href="mailto:andreas@rammhold.de">Andreas Rammhold</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
             
         </footer>
 </div>

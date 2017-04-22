@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Weird random notes (Posts about saltstack)</title><link>https://andir.github.io/</link><description></description><atom:link href="https://andir.github.io/categories/saltstack.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sat, 22 Apr 2017 17:07:37 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>SaltStack, Ansible, Puppet, … how can we share data between servers?</title><link>https://andir.github.io/posts/saltstack-ansible-puppet-how-can-we-share-data/</link><dc:creator>Andreas Rammhold</dc:creator><description>&lt;div&gt;&lt;p&gt;WARNING: This is still a draft somewhat..&lt;/p&gt;
+&lt;p&gt;Lately I've been depressed by the lack of automation in my life or really in
+the projects I take part in.&lt;/p&gt;
+&lt;p&gt;Most of my stuff is not hosted on AWS, Azure, Digitalocean or other big "cloud"
+players. That is due to multiple reasons:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;We may have hardware, rack, power and network capacity available which is
+basically for free.&lt;/li&gt;
+&lt;li&gt;We might need physical connectivity to the machine - e.g. connecting to a
+local WiFi mesh network, a beamer, some audio equipment and so on…&lt;/li&gt;
+&lt;li&gt;We want to remain in control of our data. That means we are not going to
+trust some random internet business.&lt;/li&gt;
+&lt;li&gt;It is cheaper, even if you've to pay for the servers that are running 24/7.
+This might not be true for a website that sells boat trips on the Atlantic
+Ocean and gets high traffic spikes every 2nd Sunday from April to December
+but for our scenarios it works quiet well.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;At the office I've been using puppet more then six years and I'm quite happy
+with it. In the local Freifunk-Community (&lt;a class="reference external" href="https://darmstadt.freifunk.net"&gt;https://darmstadt.freifunk.net&lt;/a&gt;) we
+are using SaltStack. For my personal infrastructure (E-Mail, Webhosting, random
+docker containers, pastebin, dn42, …) I'm using Ansible (&lt;a class="reference external" href="https://ansible.com"&gt;https://ansible.com&lt;/a&gt;).&lt;/p&gt;
+&lt;p&gt;Neither of those deployments are very trivial, they are probably just the
+average project for either of those tools.&lt;/p&gt;
+&lt;p&gt;A few weeks back I and a few others started writing SaltStack states for an
+IRC-Network that we are running. If you think about automating the deployment
+of IRCd's it is rather easier. Create a VM, install your favorite flavor of
+linux, install build dependencies for the IRCd of your choice and
+generate the configuration. That's basically it.&lt;/p&gt;
+&lt;p&gt;We've been using TLS in our network for about 10 years now. (Both user and
+server2server communication). Since it wasn't and still is not desirable to buy
+wildcard certificates or share certificates between servers we are running our
+own CA (including OCSP service etc.). With the switch to automated server
+configuration we also want to deploy LetsEncrypt - actually LetsEncrypt
+encouraged us to start using some kind of automation since humans aren't
+reliable and having to jupe a server every 3 months because the admin still
+didn't configure a LetsEncrypt cronjob is not what we are after.&lt;/p&gt;
+&lt;p&gt;So I started out writing some states and a Vagrantfile
+(&lt;a class="reference external" href="https://gist.github.com/andir/2188da38904557a58cd7df29fd277275"&gt;https://gist.github.com/andir/2188da38904557a58cd7df29fd277275&lt;/a&gt;) for easier
+testing of the whole stack. After tackling a few issues with Vagrant and
+different &lt;cite&gt;boxes&lt;/cite&gt; (as vagrant calls VM images) everything looked fine.&lt;/p&gt;
+&lt;p&gt;We basically have a zoo of VMs on our laptops wich simulate the production
+network. At least so we thought.&lt;/p&gt;
+&lt;p&gt;For the links between the IRCDs we are using TLS. So far we did exchange
+fingerprints, manually add them to the &lt;cite&gt;ircd.conf&lt;/cite&gt;, &lt;cite&gt;/quote rehash&lt;/cite&gt; and off you
+go.&lt;/p&gt;
+&lt;p&gt;When you automate the deployment you also automate the configuration of links
+between your servers. While you can configure &lt;cite&gt;send_password&lt;/cite&gt; and
+&lt;cite&gt;receive_password&lt;/cite&gt; since what I do know when that isn't what we want to rely on
+when sending chat messages around the globe. So we still need to exchange
+certificate fingerprints. One might say that &lt;cite&gt;TLSA&lt;/cite&gt; records are made for that
+but I wonder why I can't use the already verified connection between my Salt
+Master and the Salt Minion. If you query DNS for TLSA records it requires your
+DNS to be up, DNSSEC to work, your local resolver to have a copy of the root
+dns zone or an upstream resolver that (hopefully) verifies DNSSEC - unlike
+OpenDNS.&lt;/p&gt;
+&lt;p&gt;Since we are also running our own DNS Servers adding them as a dependency isn't
+really a great idea. We might be recovering from the death of some parts of the
+infrastructure. The only reasonable approach to me is to use the authenticated
+relationship from minion and master to exchange public keys, fingerprints etc.&lt;/p&gt;
+&lt;p&gt;While I'm currently focusing on exchanging certificate fingerprints and/or
+public keys this applies to a bunch of scenarios you might come acress when you
+decide to drop all shared secrets and generate them on your servers. A few of
+those could be:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;Generating and exchanging TSIG keys for nsupdate between your DNS Servers
+and minions.&lt;/li&gt;
+&lt;li&gt;Communicating a shared secret for database access, borg backups, …&lt;/li&gt;
+&lt;li&gt;Distributing SSHFPs between your servers (local verification, publishing
+them to DNS as SSHFP records,…)&lt;/li&gt;
+&lt;li&gt;Trust bootstrapping (after minion key verification) for any kind of internal
+secret database&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;With SaltStack you've a few options to transfer data from a minion to the master / other minions:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;use the Mine to export data&lt;/li&gt;
+&lt;li&gt;use grains&lt;/li&gt;
+&lt;li&gt;use pillars (with pre-generated certificates, keys, …) -&amp;gt; not the desired solution&lt;/li&gt;
+&lt;li&gt;trigger events with custom context&lt;/li&gt;
+&lt;li&gt;use a vault&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;In puppet you could use exported ressources, in Ansible you could write to some
+kind of custom api without much overhead or query/configure the other side
+on-demand since a single run isn't restricted to a single server.&lt;/p&gt;
+&lt;p&gt;Puppet has solved the issue for many years - people tend to not like puppet for
+various reasons. Maybe because it feels like programming?&lt;/p&gt;
+&lt;div class="section" id="using-the-salt-mine"&gt;
+&lt;h2&gt;Using the Salt Mine&lt;/h2&gt;
+&lt;p&gt;The Salt Mine is a handy construct when it comes to exporting data from a node
+as long as that data only exists as some kind of list or with a very low
+cardinality. Also it only makes sense if the data is mostly static and doesn't
+change. Changes to the exported data (e.g. another information, removal of
+information, …) require changes to the minion configuration. This isn't really
+practical if you are trying to write modular states where not everything is
+hard-wired with another state.&lt;/p&gt;
+&lt;p&gt;For reference this is how you would export information about a certificate:&lt;/p&gt;
+&lt;pre class="code yaml"&gt;&lt;a name="rest_code_cc08a775877a401fa9e93c59e8fcf89f-1"&gt;&lt;/a&gt;&lt;span class="l l-Scalar l-Scalar-Plain"&gt;mine_functions&lt;/span&gt;&lt;span class="p p-Indicator"&gt;:&lt;/span&gt;
+&lt;a name="rest_code_cc08a775877a401fa9e93c59e8fcf89f-2"&gt;&lt;/a&gt;  &lt;span class="l l-Scalar l-Scalar-Plain"&gt;my_awesome_certificate&lt;/span&gt;&lt;span class="p p-Indicator"&gt;:&lt;/span&gt;
+&lt;a name="rest_code_cc08a775877a401fa9e93c59e8fcf89f-3"&gt;&lt;/a&gt;    &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;mine_function&lt;/span&gt;&lt;span class="p p-Indicator"&gt;:&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;tls.cert_info&lt;/span&gt;
+&lt;a name="rest_code_cc08a775877a401fa9e93c59e8fcf89f-4"&gt;&lt;/a&gt;    &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;/etc/letsencrypt/live/.../cert.pem&lt;/span&gt;
+&lt;/pre&gt;&lt;p&gt;This has to be deployed on each minion and you probably also have to restart the minion when changeing the file.&lt;/p&gt;
+&lt;p&gt;More information on the salt mine can be found at &lt;a class="reference external" href="https://docs.saltstack.com/en/latest/topics/mine/"&gt;https://docs.saltstack.com/en/latest/topics/mine/&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="trying-to-export-data-via-grains"&gt;
+&lt;h2&gt;Trying to export data via Grains&lt;/h2&gt;
+&lt;p&gt;I'm not going to get into the details or provide a example configuration here.
+I've written a bunch of grains and they just work. The limitation is that you
+can't really attribute them. So you can't tell your custom grains what to
+export without changing the code or introducing custom configuration files,
+adding stuff to the minion config etc.. While this approach would automatically
+propagate new certificate fingerprints, public keys, … you still have to use
+the Salt Mine to actually export them.  Which isn't that bad.&lt;/p&gt;
+&lt;p&gt;The lack of configuration options for custom grains kills this approach for me.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="pillars"&gt;
+&lt;h2&gt;Pillars&lt;/h2&gt;
+&lt;p&gt;LOLNOPE. Using pillars would require manual collection of fingerprints or (even
+worse) central management of all the certificates.&lt;/p&gt;
+&lt;p&gt;This simply doesn't work for me.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="using-a-custom-event"&gt;
+&lt;h2&gt;Using a custom event&lt;/h2&gt;
+&lt;p&gt;This is what seems to be a promising but ephemeral approach to the issue.&lt;/p&gt;
+&lt;p&gt;The basic idea is:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p class="first"&gt;Create the public-/private key pair on the minion.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;On changes to that fail (creation, key rollover, new certificate, …) execute
+a script with the filename as argument&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;The (bash) script then extracts the information we want from the file.
+(using &lt;cite&gt;openssl&lt;/cite&gt; or other command line tools) and publishes those
+information using something like&lt;/p&gt;
+&lt;pre class="code bash"&gt;&lt;a name="rest_code_f69d8cda1e0a446e835937013791f616-1"&gt;&lt;/a&gt;&lt;span class="sb"&gt;`&lt;/span&gt;salt-call event.send my/custom/event/certificate-changed &lt;span class="s1"&gt;'{"certfp": "ABCDEF01234567890…"}'&lt;/span&gt;&lt;span class="sb"&gt;`&lt;/span&gt;
+&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;In order to use the "published" fingerprint other minions must be up, running
+and listening to those events. Otherwise the information is lost and nobody
+cares.&lt;/p&gt;
+&lt;p&gt;This approach only works if we figure out how to store the fingerprints - after
+receiving an event.&lt;/p&gt;
+&lt;p&gt;It basically sucks as bad as the others but we might be able to configure the
+links after randomly restarting salt-minions and running &lt;cite&gt;salt '*' state.apply&lt;/cite&gt; …&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="using-a-vault"&gt;
+&lt;h2&gt;Using a vault&lt;/h2&gt;
+&lt;p&gt;At the time of this writing this seems to be a valid option. I've not tried it
+yet. There will be an update on this soon (tm).&lt;/p&gt;
+&lt;p&gt;Reading of the vault seems to be rather easy. You can also write to it but only
+using infromation that is availbe during state-rendering. So I'm not sure what
+the benefit is. One could probably combine this with the event approach to
+store the public keys of the minions in the vault by listening to key events on
+the master.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="conclusion"&gt;
+&lt;h2&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;This world sucks. We need better tools :/&lt;/p&gt;
+&lt;/div&gt;&lt;/div&gt;</description><category>ansible</category><category>automation</category><category>linux</category><category>puppet</category><category>saltstack</category><guid>https://andir.github.io/posts/saltstack-ansible-puppet-how-can-we-share-data/</guid><pubDate>Sat, 22 Apr 2017 16:50:00 GMT</pubDate></item></channel></rss>

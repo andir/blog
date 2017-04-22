@@ -2,7 +2,6 @@
 <html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="en">
 <head>
 <meta charset="utf-8">
-<base href="https://andir.github.io/posts/linux-ip-vrf-systemd-networkd/">
 <meta name="description" content="Using vrf interfaces with systemd-networkd">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Using VRFs with linux and systemd-networkd | Weird random notes</title>
@@ -11,11 +10,11 @@
 <link href="../../assets/css/code.css" rel="stylesheet" type="text/css">
 <link href="../../assets/css/colorbox.css" rel="stylesheet" type="text/css">
 <link href="../../assets/css/theme.css" rel="stylesheet" type="text/css">
-<meta content="#5670d4" name="theme-color">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../../rss.xml">
 <link rel="canonical" href="https://andir.github.io/posts/linux-ip-vrf-systemd-networkd/">
-<!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="description" itemprop="description" content="Using vrf interfaces with systemd-networkd">
-<meta name="author" content="Andreas Rammhold">
+<!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="author" content="Andreas Rammhold">
 <link rel="prev" href="../linux-ip-vrf/" title="Using VRFs with linux" type="text/html">
 <link rel="next" href="../juniper-config-recovery-mcd-coredump/" title="Juniper MCD decided to coredump on commit and rollback" type="text/html">
 <meta property="og:site_name" content="Weird random notes">
@@ -84,7 +83,7 @@
 <article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">Using VRFs with linux and systemd-networkd</a></h1>
 
         <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                     Andreas Rammhold
             </span></p>
             <p class="dateline"><a href="." rel="bookmark"><time class="published dt-published" datetime="2016-10-09T13:00:00Z" itemprop="datePublished" title="2016-10-09 13:00">2016-10-09 13:00</time></a></p>
@@ -97,8 +96,7 @@
         </p>
 <p class="sourceline"><a href="index.rst" id="sourcelink">Source</a></p>
 
-                <meta name="description" itemprop="description" content="Using vrf interfaces with systemd-networkd">
-</div>
+        </div>
         
 
     </header><div class="e-content entry-content" itemprop="articleBody text">
@@ -118,10 +116,10 @@ TableId=42
 </pre>
 </noscript>
 <p>After restarting <cite>systemd-networkd</cite> with <cite>systemctl restart systemd-networkd</cite> you should see the corresponding interface:</p>
-<pre class="code shell"><a name="rest_code_f5b5c9b63b014452a85050889e28c021-1"></a>$ ip -d link show dev vrf-customer1
-<a name="rest_code_f5b5c9b63b014452a85050889e28c021-2"></a>9: vrf-customer1: &lt;NOARP,MASTER&gt; mtu <span class="m">1500</span> qdisc noop state DOWN mode DEFAULT group default qlen 1000
-<a name="rest_code_f5b5c9b63b014452a85050889e28c021-3"></a>    link/ether 02:74:c7:e1:de:64 brd ff:ff:ff:ff:ff:ff promiscuity 0
-<a name="rest_code_f5b5c9b63b014452a85050889e28c021-4"></a>    vrf table <span class="m">42</span> addrgenmode eui64 numtxqueues <span class="m">1</span> numrxqueues 1
+<pre class="code shell"><a name="rest_code_7f467dc80b4c47248f85ba80459c0523-1"></a>$ ip -d link show dev vrf-customer1
+<a name="rest_code_7f467dc80b4c47248f85ba80459c0523-2"></a><span class="m">9</span>: vrf-customer1: &lt;NOARP,MASTER&gt; mtu <span class="m">1500</span> qdisc noop state DOWN mode DEFAULT group default qlen <span class="m">1000</span>
+<a name="rest_code_7f467dc80b4c47248f85ba80459c0523-3"></a>    link/ether <span class="m">02</span>:74:c7:e1:de:64 brd ff:ff:ff:ff:ff:ff promiscuity <span class="m">0</span>
+<a name="rest_code_7f467dc80b4c47248f85ba80459c0523-4"></a>    vrf table <span class="m">42</span> addrgenmode eui64 numtxqueues <span class="m">1</span> numrxqueues <span class="m">1</span>
 </pre>
 <p>Note the last line which states <cite>vrf table 42</cite>.</p>
 <p>To add an interface to the VRF you'll have to modify/create the corresponding .network file. This is how the file <cite>/etc/systemd/network/enp0s31f6.network</cite> would look on my notebook:</p>
@@ -137,10 +135,10 @@ VRF=vrf-customer1
 </pre>
 </noscript>
 <p>Restarting <cite>systemd-networkd</cite> again and checking the status using <cite>ip -d link</cite> gives us:</p>
-<pre class="code shell"><a name="rest_code_bee2336da3344214820beca936074673-1"></a><span class="nv">$ip</span> -d link show  dev enp0s31f6
-<a name="rest_code_bee2336da3344214820beca936074673-2"></a>3: enp0s31f6: &lt;NO-CARRIER,BROADCAST,MULTICAST,UP&gt; mtu <span class="m">1500</span> qdisc fq_codel master vrf-customer1 state DOWN mode DEFAULT group default qlen 1000
-<a name="rest_code_bee2336da3344214820beca936074673-3"></a> link/ether 50:7b:9d:cf:34:dc brd ff:ff:ff:ff:ff:ff promiscuity 0
-<a name="rest_code_bee2336da3344214820beca936074673-4"></a> vrf_slave table <span class="m">42</span> addrgenmode eui64 numtxqueues <span class="m">1</span> numrxqueues 1
+<pre class="code shell"><a name="rest_code_e168d6bd19e44d0dae52058c0f74e8fb-1"></a><span class="nv">$ip</span> -d link show  dev enp0s31f6
+<a name="rest_code_e168d6bd19e44d0dae52058c0f74e8fb-2"></a><span class="m">3</span>: enp0s31f6: &lt;NO-CARRIER,BROADCAST,MULTICAST,UP&gt; mtu <span class="m">1500</span> qdisc fq_codel master vrf-customer1 state DOWN mode DEFAULT group default qlen <span class="m">1000</span>
+<a name="rest_code_e168d6bd19e44d0dae52058c0f74e8fb-3"></a> link/ether <span class="m">50</span>:7b:9d:cf:34:dc brd ff:ff:ff:ff:ff:ff promiscuity <span class="m">0</span>
+<a name="rest_code_e168d6bd19e44d0dae52058c0f74e8fb-4"></a> vrf_slave table <span class="m">42</span> addrgenmode eui64 numtxqueues <span class="m">1</span> numrxqueues <span class="m">1</span>
 </pre>
 <p>Again note the last line which states <cite>vrf_slave table 42</cite>. Also in the first line you can see that it belongs to the VRF <cite>vrf-customer</cite>.</p>
 <p>And that is all for now. You still have to add the <cite>ip rule</cite> commands in some way or another (there is no support in systemd-networkd yet and I did not have a good idea without inventing <cite>ip rule</cite> management in systemd).</p>
@@ -187,7 +185,7 @@ VRF=vrf-customer1
         <!--End of body content-->
 
         <footer id="footer">
-            Contents © 2016         <a href="mailto:andreas@rammhold.de">Andreas Rammhold</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            Contents © 2017         <a href="mailto:andreas@rammhold.de">Andreas Rammhold</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
             
         </footer>
 </div>

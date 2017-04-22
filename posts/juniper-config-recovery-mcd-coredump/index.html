@@ -2,7 +2,6 @@
 <html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="en">
 <head>
 <meta charset="utf-8">
-<base href="https://andir.github.io/posts/juniper-config-recovery-mcd-coredump/">
 <meta name="description" content="Recover juniper configuration when rollback and delete of invalid statements segfault mcd">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Juniper MCD decided to coredump on commit and rollback | Weird random notes</title>
@@ -11,12 +10,13 @@
 <link href="../../assets/css/code.css" rel="stylesheet" type="text/css">
 <link href="../../assets/css/colorbox.css" rel="stylesheet" type="text/css">
 <link href="../../assets/css/theme.css" rel="stylesheet" type="text/css">
-<meta content="#5670d4" name="theme-color">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../../rss.xml">
 <link rel="canonical" href="https://andir.github.io/posts/juniper-config-recovery-mcd-coredump/">
-<!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="description" itemprop="description" content="Recover juniper configuration when rollback and delete of invalid statements segfault mcd">
-<meta name="author" content="Andreas Rammhold">
+<!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="author" content="Andreas Rammhold">
 <link rel="prev" href="../linux-ip-vrf-systemd-networkd/" title="Using VRFs with linux and systemd-networkd" type="text/html">
+<link rel="next" href="../saltstack-ansible-puppet-how-can-we-share-data/" title="SaltStack, Ansible, Puppet, … how can we share data between servers?" type="text/html">
 <meta property="og:site_name" content="Weird random notes">
 <meta property="og:title" content="Juniper MCD decided to coredump on commit and rollback">
 <meta property="og:url" content="https://andir.github.io/posts/juniper-config-recovery-mcd-coredump/">
@@ -81,7 +81,7 @@
 <article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">Juniper MCD decided to coredump on commit and rollback</a></h1>
 
         <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                     Andreas Rammhold
             </span></p>
             <p class="dateline"><a href="." rel="bookmark"><time class="published dt-published" datetime="2016-11-08T15:00:00Z" itemprop="datePublished" title="2016-11-08 15:00">2016-11-08 15:00</time></a></p>
@@ -94,35 +94,34 @@
         </p>
 <p class="sourceline"><a href="index.rst" id="sourcelink">Source</a></p>
 
-                <meta name="description" itemprop="description" content="Recover juniper configuration when rollback and delete of invalid statements segfault mcd">
-</div>
+        </div>
         
 
     </header><div class="e-content entry-content" itemprop="articleBody text">
     <div>
 <p>On a Juniper EX3300 a colleague of mine entered an invalid statement:</p>
-<pre class="code shell"><a name="rest_code_9ff56addf1d14e95a0c99df391619a33-1"></a>interface-range some_ports <span class="o">{</span>
-<a name="rest_code_9ff56addf1d14e95a0c99df391619a33-2"></a>    member ge0/0/2<span class="p">;</span>
-<a name="rest_code_9ff56addf1d14e95a0c99df391619a33-3"></a>    member-range ge-0/0/0 to ge-0/0/1<span class="p">;</span>
-<a name="rest_code_9ff56addf1d14e95a0c99df391619a33-4"></a><span class="o">}</span>
+<pre class="code shell"><a name="rest_code_49235dfa72f94f99becb67cfb5ff764a-1"></a>interface-range some_ports <span class="o">{</span>
+<a name="rest_code_49235dfa72f94f99becb67cfb5ff764a-2"></a>    member ge0/0/2<span class="p">;</span>
+<a name="rest_code_49235dfa72f94f99becb67cfb5ff764a-3"></a>    member-range ge-0/0/0 to ge-0/0/1<span class="p">;</span>
+<a name="rest_code_49235dfa72f94f99becb67cfb5ff764a-4"></a><span class="o">}</span>
 </pre>
 <p>The <cite>member ge0/0/2</cite> is missing a <cite>-</cite> between <cite>ge</cite> and <cite>0/0/2</cite>. Juniper (for whatever reason) accepted the input but <cite>mcd</cite> decided to segfault when asked to delete or rollback the configuration.</p>
-<pre class="code shell"><a name="rest_code_10e22802ce3f42dd8cb18db1b7cfd2b3-1"></a>pid <span class="m">75982</span> <span class="o">(</span>mgd<span class="o">)</span>, uid 0: exited on signal <span class="m">11</span> <span class="o">(</span>core dumped<span class="o">)</span>
+<pre class="code shell"><a name="rest_code_2983cccfae69446a9a771b327a0c6f6e-1"></a>pid <span class="m">75982</span> <span class="o">(</span>mgd<span class="o">)</span>, uid <span class="m">0</span>: exited on signal <span class="m">11</span> <span class="o">(</span>core dumped<span class="o">)</span>
 </pre>
 <p>Recovering from that case is actually not that hard. You just know the right command(s) ;-)</p>
 <p>You can load an older configuration via the <cite>load override &lt;config file&gt;</cite> command. I did also try the <cite>load replace &lt;config file&gt;</cite> command but that also segfaulted..</p>
-<pre class="code shell"><a name="rest_code_4bd7f1996ba647e889b76624f7fa8798-1"></a>andi@foo# load override ?
-<a name="rest_code_4bd7f1996ba647e889b76624f7fa8798-2"></a>Possible completions:
-<a name="rest_code_4bd7f1996ba647e889b76624f7fa8798-3"></a>  &lt;filename&gt;           Filename <span class="o">(</span>URL, local, remote, or floppy<span class="o">)</span>
-<a name="rest_code_4bd7f1996ba647e889b76624f7fa8798-4"></a>  db/                  Last changed: Oct <span class="m">27</span> 10:44:35
-<a name="rest_code_4bd7f1996ba647e889b76624f7fa8798-5"></a>  juniper.conf+.gz     Size: 6000, Last changed: Nov <span class="m">08</span> 15:12:55
-<a name="rest_code_4bd7f1996ba647e889b76624f7fa8798-6"></a>  juniper.conf.1.gz    Size: 5913, Last changed: Jun <span class="m">30</span> 13:36:52
-<a name="rest_code_4bd7f1996ba647e889b76624f7fa8798-7"></a>  juniper.conf.2.gz    Size: 5881, Last changed: Jun <span class="m">30</span> 12:59:25
-<a name="rest_code_4bd7f1996ba647e889b76624f7fa8798-8"></a>  juniper.conf.3.gz    Size: 5280, Last changed: Jun <span class="m">30</span> 12:54:02
-<a name="rest_code_4bd7f1996ba647e889b76624f7fa8798-9"></a>  <span class="o">[</span>...<span class="o">]</span>
-<a name="rest_code_4bd7f1996ba647e889b76624f7fa8798-10"></a><span class="o">{</span>master:0<span class="o">}[</span>edit<span class="o">]</span>
-<a name="rest_code_4bd7f1996ba647e889b76624f7fa8798-11"></a>andi@foo# load override juniper.conf+.gz
-<a name="rest_code_4bd7f1996ba647e889b76624f7fa8798-12"></a>load <span class="nb">complete</span>
+<pre class="code shell"><a name="rest_code_fe93c0aada6146dcaf2fe7143f0d1ede-1"></a>andi@foo# load override ?
+<a name="rest_code_fe93c0aada6146dcaf2fe7143f0d1ede-2"></a>Possible completions:
+<a name="rest_code_fe93c0aada6146dcaf2fe7143f0d1ede-3"></a>  &lt;filename&gt;           Filename <span class="o">(</span>URL, local, remote, or floppy<span class="o">)</span>
+<a name="rest_code_fe93c0aada6146dcaf2fe7143f0d1ede-4"></a>  db/                  Last changed: Oct <span class="m">27</span> <span class="m">10</span>:44:35
+<a name="rest_code_fe93c0aada6146dcaf2fe7143f0d1ede-5"></a>  juniper.conf+.gz     Size: <span class="m">6000</span>, Last changed: Nov <span class="m">08</span> <span class="m">15</span>:12:55
+<a name="rest_code_fe93c0aada6146dcaf2fe7143f0d1ede-6"></a>  juniper.conf.1.gz    Size: <span class="m">5913</span>, Last changed: Jun <span class="m">30</span> <span class="m">13</span>:36:52
+<a name="rest_code_fe93c0aada6146dcaf2fe7143f0d1ede-7"></a>  juniper.conf.2.gz    Size: <span class="m">5881</span>, Last changed: Jun <span class="m">30</span> <span class="m">12</span>:59:25
+<a name="rest_code_fe93c0aada6146dcaf2fe7143f0d1ede-8"></a>  juniper.conf.3.gz    Size: <span class="m">5280</span>, Last changed: Jun <span class="m">30</span> <span class="m">12</span>:54:02
+<a name="rest_code_fe93c0aada6146dcaf2fe7143f0d1ede-9"></a>  <span class="o">[</span>...<span class="o">]</span>
+<a name="rest_code_fe93c0aada6146dcaf2fe7143f0d1ede-10"></a><span class="o">{</span>master:0<span class="o">}[</span>edit<span class="o">]</span>
+<a name="rest_code_fe93c0aada6146dcaf2fe7143f0d1ede-11"></a>andi@foo# load override juniper.conf+.gz
+<a name="rest_code_fe93c0aada6146dcaf2fe7143f0d1ede-12"></a>load <span class="nb">complete</span>
 </pre>
 <p>In my case the <cite>juniper.conf+.gz</cite> was the desired config file. I recommend inspecting those files before loading them (they are stored in <cite>/config/</cite>).</p>
 </div>
@@ -135,6 +134,9 @@
 <ul class="pager hidden-print">
 <li class="previous">
                 <a href="../linux-ip-vrf-systemd-networkd/" rel="prev" title="Using VRFs with linux and systemd-networkd">Previous post</a>
+            </li>
+            <li class="next">
+                <a href="../saltstack-ansible-puppet-how-can-we-share-data/" rel="next" title="SaltStack, Ansible, Puppet, … how can we share data between servers?">Next post</a>
             </li>
         </ul></nav></aside><section class="comments hidden-print"><h2>Comments</h2>
         
@@ -163,7 +165,7 @@
         <!--End of body content-->
 
         <footer id="footer">
-            Contents © 2016         <a href="mailto:andreas@rammhold.de">Andreas Rammhold</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            Contents © 2017         <a href="mailto:andreas@rammhold.de">Andreas Rammhold</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
             
         </footer>
 </div>

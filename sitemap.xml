@@ -7,19 +7,31 @@
                         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
  <url>
   <loc>https://andir.github.io/</loc>
-  <lastmod>2016-06-14T16:50:00Z</lastmod>
+  <lastmod>2017-04-22T16:52:00Z</lastmod>
  </url>
  <url>
   <loc>https://andir.github.io/2016/</loc>
   <lastmod>2016-06-14T16:50:00Z</lastmod>
  </url>
  <url>
+  <loc>https://andir.github.io/2017/</loc>
+  <lastmod>2017-04-22T16:52:00Z</lastmod>
+ </url>
+ <url>
   <loc>https://andir.github.io/archive.html</loc>
-  <lastmod>2016-11-08T16:07:00Z</lastmod>
+  <lastmod>2017-04-22T16:52:00Z</lastmod>
  </url>
  <url>
   <loc>https://andir.github.io/categories/</loc>
-  <lastmod>2016-11-08T16:07:00Z</lastmod>
+  <lastmod>2017-04-22T16:52:00Z</lastmod>
+ </url>
+ <url>
+  <loc>https://andir.github.io/categories/ansible/</loc>
+  <lastmod>2017-04-22T16:52:00Z</lastmod>
+ </url>
+ <url>
+  <loc>https://andir.github.io/categories/automation/</loc>
+  <lastmod>2017-04-22T16:52:00Z</lastmod>
  </url>
  <url>
   <loc>https://andir.github.io/categories/cat_linux-network/</loc>
@@ -66,12 +78,20 @@
   <lastmod>2016-06-14T16:50:00Z</lastmod>
  </url>
  <url>
+  <loc>https://andir.github.io/categories/puppet/</loc>
+  <lastmod>2017-04-22T16:52:00Z</lastmod>
+ </url>
+ <url>
   <loc>https://andir.github.io/categories/recovery/</loc>
   <lastmod>2016-11-08T16:07:00Z</lastmod>
  </url>
  <url>
   <loc>https://andir.github.io/categories/routing/</loc>
   <lastmod>2016-06-14T17:22:00Z</lastmod>
+ </url>
+ <url>
+  <loc>https://andir.github.io/categories/saltstack/</loc>
+  <lastmod>2017-04-22T16:52:00Z</lastmod>
  </url>
  <url>
   <loc>https://andir.github.io/categories/systemd/</loc>
@@ -99,7 +119,7 @@
  </url>
  <url>
   <loc>https://andir.github.io/listings/hello.py.html</loc>
-  <lastmod>2016-06-14T16:50:00Z</lastmod>
+  <lastmod>2017-04-22T16:51:00Z</lastmod>
  </url>
  <url>
   <loc>https://andir.github.io/posts/isc-dhcpd-multiple-classes/</loc>
@@ -120,6 +140,10 @@
  <url>
   <loc>https://andir.github.io/posts/postgresql-tmpfs-with-sytemdsocket-activation-for-local-ephemeral-data-during-development/</loc>
   <lastmod>2016-06-14T16:50:00Z</lastmod>
+ </url>
+ <url>
+  <loc>https://andir.github.io/posts/saltstack-ansible-puppet-how-can-we-share-data/</loc>
+  <lastmod>2017-04-22T16:51:00Z</lastmod>
  </url>
  <url>
   <loc>https://andir.github.io/stories/about-nikola/</loc>
