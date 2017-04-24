@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Weird random notes (Posts about linux)</title><link>https://andir.github.io/</link><description></description><atom:link href="https://andir.github.io/categories/linux.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sat, 22 Apr 2017 17:07:38 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>SaltStack, Ansible, Puppet, … how can we share data between servers?</title><link>https://andir.github.io/posts/saltstack-ansible-puppet-how-can-we-share-data/</link><dc:creator>Andreas Rammhold</dc:creator><description>&lt;div&gt;&lt;p&gt;WARNING: This is still a draft somewhat..&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Weird random notes (Posts about linux)</title><link>https://andir.github.io/</link><description></description><atom:link href="https://andir.github.io/categories/linux.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Mon, 24 Apr 2017 05:33:05 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>SaltStack, Ansible, Puppet, … how can we share data between servers?</title><link>https://andir.github.io/posts/saltstack-ansible-puppet-how-can-we-share-data/</link><dc:creator>Andreas Rammhold</dc:creator><description>&lt;div&gt;&lt;p&gt;WARNING: This is still a draft somewhat..&lt;/p&gt;
 &lt;p&gt;Lately I've been depressed by the lack of automation in my life or really in
 the projects I take part in.&lt;/p&gt;
 &lt;p&gt;Most of my stuff is not hosted on AWS, Azure, Digitalocean or other big "cloud"
@@ -15,7 +15,7 @@ trust some random internet business.&lt;/li&gt;
 &lt;li&gt;It is cheaper, even if you've to pay for the servers that are running 24/7.
 This might not be true for a website that sells boat trips on the Atlantic
 Ocean and gets high traffic spikes every 2nd Sunday from April to December
-but for our scenarios it works quiet well.&lt;/li&gt;
+but for our scenarios it works quite well.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;At the office I've been using puppet more then six years and I'm quite happy
@@ -100,10 +100,10 @@ information, …) require changes to the minion configuration. This isn't really
 practical if you are trying to write modular states where not everything is
 hard-wired with another state.&lt;/p&gt;
 &lt;p&gt;For reference this is how you would export information about a certificate:&lt;/p&gt;
-&lt;pre class="code yaml"&gt;&lt;a name="rest_code_cc08a775877a401fa9e93c59e8fcf89f-1"&gt;&lt;/a&gt;&lt;span class="l l-Scalar l-Scalar-Plain"&gt;mine_functions&lt;/span&gt;&lt;span class="p p-Indicator"&gt;:&lt;/span&gt;
-&lt;a name="rest_code_cc08a775877a401fa9e93c59e8fcf89f-2"&gt;&lt;/a&gt;  &lt;span class="l l-Scalar l-Scalar-Plain"&gt;my_awesome_certificate&lt;/span&gt;&lt;span class="p p-Indicator"&gt;:&lt;/span&gt;
-&lt;a name="rest_code_cc08a775877a401fa9e93c59e8fcf89f-3"&gt;&lt;/a&gt;    &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;mine_function&lt;/span&gt;&lt;span class="p p-Indicator"&gt;:&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;tls.cert_info&lt;/span&gt;
-&lt;a name="rest_code_cc08a775877a401fa9e93c59e8fcf89f-4"&gt;&lt;/a&gt;    &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;/etc/letsencrypt/live/.../cert.pem&lt;/span&gt;
+&lt;pre class="code yaml"&gt;&lt;a name="rest_code_f45d57cf70424d58a71058a0b78f77f4-1"&gt;&lt;/a&gt;&lt;span class="l l-Scalar l-Scalar-Plain"&gt;mine_functions&lt;/span&gt;&lt;span class="p p-Indicator"&gt;:&lt;/span&gt;
+&lt;a name="rest_code_f45d57cf70424d58a71058a0b78f77f4-2"&gt;&lt;/a&gt;  &lt;span class="l l-Scalar l-Scalar-Plain"&gt;my_awesome_certificate&lt;/span&gt;&lt;span class="p p-Indicator"&gt;:&lt;/span&gt;
+&lt;a name="rest_code_f45d57cf70424d58a71058a0b78f77f4-3"&gt;&lt;/a&gt;    &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;mine_function&lt;/span&gt;&lt;span class="p p-Indicator"&gt;:&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;tls.cert_info&lt;/span&gt;
+&lt;a name="rest_code_f45d57cf70424d58a71058a0b78f77f4-4"&gt;&lt;/a&gt;    &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;/etc/letsencrypt/live/.../cert.pem&lt;/span&gt;
 &lt;/pre&gt;&lt;p&gt;This has to be deployed on each minion and you probably also have to restart the minion when changeing the file.&lt;/p&gt;
 &lt;p&gt;More information on the salt mine can be found at &lt;a class="reference external" href="https://docs.saltstack.com/en/latest/topics/mine/"&gt;https://docs.saltstack.com/en/latest/topics/mine/&lt;/a&gt;.&lt;/p&gt;
 &lt;/div&gt;
@@ -138,7 +138,7 @@ a script with the filename as argument&lt;/p&gt;
 &lt;li&gt;&lt;p class="first"&gt;The (bash) script then extracts the information we want from the file.
 (using &lt;cite&gt;openssl&lt;/cite&gt; or other command line tools) and publishes those
 information using something like&lt;/p&gt;
-&lt;pre class="code bash"&gt;&lt;a name="rest_code_f69d8cda1e0a446e835937013791f616-1"&gt;&lt;/a&gt;&lt;span class="sb"&gt;`&lt;/span&gt;salt-call event.send my/custom/event/certificate-changed &lt;span class="s1"&gt;'{"certfp": "ABCDEF01234567890…"}'&lt;/span&gt;&lt;span class="sb"&gt;`&lt;/span&gt;
+&lt;pre class="code bash"&gt;&lt;a name="rest_code_9c5fc113423d4728a28b21b82d3d4a1e-1"&gt;&lt;/a&gt;&lt;span class="sb"&gt;`&lt;/span&gt;salt-call event.send my/custom/event/certificate-changed &lt;span class="s1"&gt;'{"certfp": "ABCDEF01234567890…"}'&lt;/span&gt;&lt;span class="sb"&gt;`&lt;/span&gt;
 &lt;/pre&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/blockquote&gt;

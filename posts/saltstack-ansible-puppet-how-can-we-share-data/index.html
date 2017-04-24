@@ -116,7 +116,7 @@ trust some random internet business.</li>
 <li>It is cheaper, even if you've to pay for the servers that are running 24/7.
 This might not be true for a website that sells boat trips on the Atlantic
 Ocean and gets high traffic spikes every 2nd Sunday from April to December
-but for our scenarios it works quiet well.</li>
+but for our scenarios it works quite well.</li>
 </ul>
 </blockquote>
 <p>At the office I've been using puppet more then six years and I'm quite happy
@@ -201,10 +201,10 @@ information, …) require changes to the minion configuration. This isn't really
 practical if you are trying to write modular states where not everything is
 hard-wired with another state.</p>
 <p>For reference this is how you would export information about a certificate:</p>
-<pre class="code yaml"><a name="rest_code_cc08a775877a401fa9e93c59e8fcf89f-1"></a><span class="l l-Scalar l-Scalar-Plain">mine_functions</span><span class="p p-Indicator">:</span>
-<a name="rest_code_cc08a775877a401fa9e93c59e8fcf89f-2"></a>  <span class="l l-Scalar l-Scalar-Plain">my_awesome_certificate</span><span class="p p-Indicator">:</span>
-<a name="rest_code_cc08a775877a401fa9e93c59e8fcf89f-3"></a>    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">mine_function</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">tls.cert_info</span>
-<a name="rest_code_cc08a775877a401fa9e93c59e8fcf89f-4"></a>    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">/etc/letsencrypt/live/.../cert.pem</span>
+<pre class="code yaml"><a name="rest_code_f45d57cf70424d58a71058a0b78f77f4-1"></a><span class="l l-Scalar l-Scalar-Plain">mine_functions</span><span class="p p-Indicator">:</span>
+<a name="rest_code_f45d57cf70424d58a71058a0b78f77f4-2"></a>  <span class="l l-Scalar l-Scalar-Plain">my_awesome_certificate</span><span class="p p-Indicator">:</span>
+<a name="rest_code_f45d57cf70424d58a71058a0b78f77f4-3"></a>    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">mine_function</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">tls.cert_info</span>
+<a name="rest_code_f45d57cf70424d58a71058a0b78f77f4-4"></a>    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">/etc/letsencrypt/live/.../cert.pem</span>
 </pre>
 <p>This has to be deployed on each minion and you probably also have to restart the minion when changeing the file.</p>
 <p>More information on the salt mine can be found at <a class="reference external" href="https://docs.saltstack.com/en/latest/topics/mine/">https://docs.saltstack.com/en/latest/topics/mine/</a>.</p>
@@ -243,7 +243,7 @@ a script with the filename as argument</p>
 <p class="first">The (bash) script then extracts the information we want from the file.
 (using <cite>openssl</cite> or other command line tools) and publishes those
 information using something like</p>
-<pre class="code bash"><a name="rest_code_f69d8cda1e0a446e835937013791f616-1"></a><span class="sb">`</span>salt-call event.send my/custom/event/certificate-changed <span class="s1">'{"certfp": "ABCDEF01234567890…"}'</span><span class="sb">`</span>
+<pre class="code bash"><a name="rest_code_9c5fc113423d4728a28b21b82d3d4a1e-1"></a><span class="sb">`</span>salt-call event.send my/custom/event/certificate-changed <span class="s1">'{"certfp": "ABCDEF01234567890…"}'</span><span class="sb">`</span>
 </pre>
 </li>
 </ul>
