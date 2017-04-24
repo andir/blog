@@ -23,7 +23,7 @@ players. That is due to multiple reasons:
  - It is cheaper, even if you've to pay for the servers that are running 24/7.
    This might not be true for a website that sells boat trips on the Atlantic
    Ocean and gets high traffic spikes every 2nd Sunday from April to December
-   but for our scenarios it works quiet well.
+   but for our scenarios it works quite well.
 
 
 At the office I've been using puppet more then six years and I'm quite happy
